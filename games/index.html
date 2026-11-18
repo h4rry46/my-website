@@ -256,10 +256,10 @@
 
     function safeRelativePath(folder, path) {
       if (typeof path !== "string" || !path.trim()) return null;
-      // Icons must stay inside their own game folder.
       const clean = path.trim().replace(/^\.\/+/, "");
       if (clean.startsWith("/") || clean.split("/").some(part => part === "..")) return null;
-      return `/${ROOT}/${encodeURIComponent(folder)}/${clean.split("/").map(encodeURIComponent).join("/")}`;
+      // Đổi dấu / ở đầu thành ./ để khớp chính xác với thư mục hiện tại trên GitHub Pages
+      return `./${encodeURIComponent(folder)}/${clean.split("/").map(encodeURIComponent).join("/")}`;
     }
 
     function createCard(folder, metadata, files) {
