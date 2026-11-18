@@ -2,46 +2,220 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Test 1in8b API (Bảo mật)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hồ sơ nhân vật - 1in8b Engine</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
-    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
-    pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    :root {
+      --bg: #f8f6f2;
+      --card: #ffffff;
+      --text: #2c2a29;
+      --muted: #6e6a66;
+      --accent: #8c1d3c;
+      --border: #e6e2dc;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    select, input, button {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 15px;
+    }
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .profile-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      display: none;
+    }
+    .profile-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    .profile-header h2 { margin: 0 0 5px 0; color: var(--accent); }
+    .badge {
+      display: inline-block;
+      background: #f0ece6;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin-right: 6px;
+    }
+    .grid-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .info-box {
+      background: #faf9f7;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .info-box strong { display: block; font-size: 13px; color: var(--muted); }
+    .timeline {
+      border-left: 2px solid var(--accent);
+      padding-left: 18px;
+      margin-left: 8px;
+    }
+    .timeline-item { margin-bottom: 12px; position: relative; }
+    .timeline-item::before {
+      content: "";
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: absolute;
+      left: -24px; top: 6px;
+    }
+    .footer-credit {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 30px;
+    }
+    .footer-credit a { color: var(--accent); }
   </style>
 </head>
 <body>
-  <h2>Thử nghiệm 1in8b.life API</h2>
-  <button id="btnFetch" onclick="fetchLife()">Tạo một cuộc đời ngẫu nhiên (Việt Nam)</button>
-  <pre id="result">Nhấn nút ở trên để xem kết quả...</pre>
+
+  <div class="header">
+    <h1>Trình tạo tiểu sử nhân vật</h1>
+    <p style="color: var(--muted); margin: 0;">Khám phá dữ liệu cuộc đời mô phỏng từ thống kê thực tế</p>
+    <div class="controls">
+      <select id="country">
+        <option value="VNM">Việt Nam (VNM)</option>
+        <option value="KOR">Hàn Quốc (KOR)</option>
+        <option value="JPN">Nhật Bản (JPN)</option>
+        <option value="USA">Hoa Kỳ (USA)</option>
+        <option value="FRA">Pháp (FRA)</option>
+      </select>
+      <input type="number" id="year" value="2000" min="1930" max="2025" placeholder="Năm sinh">
+      <button id="btnGenerate" onclick="generateLife()">Tạo tiểu sử mới</button>
+    </div>
+    <p id="status" style="color: var(--accent); font-size: 14px; margin-top: 10px;"></p>
+  </div>
+
+  <div id="card" class="profile-card">
+    <div class="profile-header">
+      <h2 id="pName">Tên nhân vật</h2>
+      <div id="pBadges"></div>
+    </div>
+
+    <div class="grid-info" id="pGrid"></div>
+
+    <h3>Hành trình & Cột mốc cuộc đời</h3>
+    <div class="timeline" id="pTimeline"></div>
+  </div>
+
+  <div class="footer-credit">
+    Dữ liệu mô phỏng được cung cấp bởi <a href="https://1in8b.life" target="_blank">1in8b Engine (1in8b.life)</a>.<br>
+    Các nhân vật và sự kiện đều là mô phỏng thống kê, không phải người thật hay dự báo tương lai.
+  </div>
 
   <script>
     const WORKER_URL = 'https://workers.dev';
 
-    async function fetchLife(retries = 3) {
-      const resultBox = document.getElementById('result');
-      const btn = document.getElementById('btnFetch');
+    async function generateLife() {
+      const btn = document.getElementById('btnGenerate');
+      const status = document.getElementById('status');
+      const card = document.getElementById('card');
+      const country = document.getElementById('country').value;
+      const year = document.getElementById('year').value;
+
       btn.disabled = true;
-      resultBox.textContent = 'Đang tải dữ liệu...';
+      status.textContent = 'Đang khởi tạo dữ liệu cuộc đời...';
 
-      for (let i = 1; i <= retries; i++) {
+      for (let i = 1; i <= 3; i++) {
         try {
-          const response = await fetch(`${WORKER_URL}?country=VNM&year=2000&record=1`);
-          const data = await response.json();
+          // Thêm &lang=vi và &record=1 để lấy luôn lời kể tiếng Việt từng năm
+          const res = await fetch(`${WORKER_URL}?country=${country}&year=${year}&lang=vi&record=brief`);
+          const data = await res.json();
 
-          if (response.status === 503 && i < retries) {
-            resultBox.textContent = `Server đang bận (503), đang tự động thử lại lần ${i + 1}/${retries}...`;
-            await new Promise(r => setTimeout(r, 2000)); // Đợi 2 giây trước khi gọi lại
+          if (res.status === 503 && i < 3) {
+            status.textContent = `Máy chủ đang bận, tự động thử lại lần ${i + 1}/3...`;
+            await new Promise(r => setTimeout(r, 2000));
             continue;
           }
 
-          resultBox.textContent = JSON.stringify(data, null, 2);
+          if (!data.lives || data.lives.length === 0) {
+            status.textContent = 'Lỗi: ' + (data.error || 'Không có dữ liệu');
+            break;
+          }
+
+          renderLife(data.lives[0]);
+          status.textContent = '';
+          card.style.display = 'block';
           break;
-        } catch (error) {
-          resultBox.textContent = 'Lỗi kết nối: ' + error.message;
+        } catch (err) {
+          status.textContent = 'Lỗi kết nối: ' + err.message;
           break;
         }
       }
       btn.disabled = false;
+    }
+
+    function renderLife(life) {
+      document.getElementById('pName').textContent = life.name;
+      
+      const sexText = life.sex === 'F' ? 'Nữ' : 'Nam';
+      const placeText = life.born_in_city ? 'Thành thị' : 'Nông thôn';
+      document.getElementById('pBadges').innerHTML = `
+        <span class="badge">Giới tính: ${sexText}</span>
+        <span class="badge">Sinh năm: ${life.born_year}</span>
+        <span class="badge">Nơi sinh: ${placeText} (${life.country})</span>
+        <span class="badge">Tuổi thọ: ${life.age_at_death} tuổi</span>
+      `;
+
+      const eduMap = {
+        none: 'Không đi học', primary: 'Tiểu học', lower_secondary: 'THCS',
+        upper_secondary: 'THPT', university: 'Đại học', graduate: 'Sau đại học'
+      };
+
+      document.getElementById('pGrid').innerHTML = `
+        <div class="info-box"><strong>Học vấn cao nhất</strong>${eduMap[life.education] || life.education}</div>
+        <div class="info-box"><strong>Gia đình lúc sinh</strong>${life.siblings} anh chị em</div>
+        <div class="info-box"><strong>Hôn nhân & Con cái</strong>${life.first_partner_age ? 'Kết hôn năm ' + life.first_partner_age + ' tuổi' : 'Độc thân'} · ${life.children} con</div>
+      `;
+
+      const timeline = document.getElementById('pTimeline');
+      timeline.innerHTML = '';
+      if (life.record && life.record.length > 0) {
+        life.record.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'timeline-item';
+          div.innerHTML = `<strong>${item[0]} tuổi:</strong> ${item[1]}`;
+          timeline.appendChild(div);
+        });
+      }
     }
   </script>
 </body>
