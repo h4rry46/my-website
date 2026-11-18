@@ -11,23 +11,37 @@
 </head>
 <body>
   <h2>Thử nghiệm 1in8b.life API</h2>
-  <button onclick="fetchLife()">Tạo một cuộc đời ngẫu nhiên (Việt Nam)</button>
+  <button id="btnFetch" onclick="fetchLife()">Tạo một cuộc đời ngẫu nhiên (Việt Nam)</button>
   <pre id="result">Nhấn nút ở trên để xem kết quả...</pre>
 
   <script>
-    const WORKER_URL = 'https://api-1in8b.h4rry46.workers.dev/';
+    const WORKER_URL = 'https://workers.dev';
 
-    async function fetchLife() {
+    async function fetchLife(retries = 3) {
       const resultBox = document.getElementById('result');
+      const btn = document.getElementById('btnFetch');
+      btn.disabled = true;
       resultBox.textContent = 'Đang tải dữ liệu...';
 
-      try {
-        const response = await fetch(`${WORKER_URL}?country=VNM&year=2000`);
-        const data = await response.json();
-        resultBox.textContent = JSON.stringify(data, null, 2);
-      } catch (error) {
-        resultBox.textContent = 'Lỗi kết nối: ' + error.message;
+      for (let i = 1; i <= retries; i++) {
+        try {
+          const response = await fetch(`${WORKER_URL}?country=VNM&year=2000&record=1`);
+          const data = await response.json();
+
+          if (response.status === 503 && i < retries) {
+            resultBox.textContent = `Server đang bận (503), đang tự động thử lại lần ${i + 1}/${retries}...`;
+            await new Promise(r => setTimeout(r, 2000)); // Đợi 2 giây trước khi gọi lại
+            continue;
+          }
+
+          resultBox.textContent = JSON.stringify(data, null, 2);
+          break;
+        } catch (error) {
+          resultBox.textContent = 'Lỗi kết nối: ' + error.message;
+          break;
+        }
       }
+      btn.disabled = false;
     }
   </script>
 </body>
