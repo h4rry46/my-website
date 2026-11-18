@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Battleship Multi-Room — h4ry46</title>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090909;
+      --surface: #141414;
+      --surface-2: #1c1c1c;
+      --border: #292929;
+      --text: #f5f5f5;
+      --muted: #929292;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --hit: #ef4444;
+      --miss: #52525b;
+      --ship: #3b82f6;
+      --sunk: #991b1b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at 50% -15%, rgba(59,130,246,.09), transparent 50%), var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+    }
+    a { color: inherit; text-decoration: none; }
+    button {
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: .875rem;
+      font-weight: 600;
+      transition: background .18s, border-color .18s, transform .1s;
+    }
+    button:hover:not(:disabled) { border-color: #555; background: #252525; }
+    button:active:not(:disabled) { transform: scale(.98); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    button.primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .topbar {
+      width: min(920px, 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+    .back:hover { color: #fff; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 4vw, 2.4rem);
+      font-weight: 750;
+      letter-spacing: -.04em;
+    }
+    .status-bar {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: .84rem;
+      color: #d4d4d8;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #eab308;
+    }
+    .dot.online { background: #22c55e; }
+    .dot.turn { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+    /* Lobby */
+    .lobby-box {
+      width: min(480px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .lobby-box h2 { font-size: 1.15rem; font-weight: 650; }
+    .lobby-box p { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+    .row { display: flex; gap: 10px; }
+    input[type="text"] {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      outline: none;
+    }
+    input[type="text"]:focus { border-color: var(--accent); }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Arena */
+    .arena {
+      width: min(920px, 100%);
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .arena.active { display: flex; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .boards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 24px;
+      justify-items: center;
+    }
+    .board-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .board-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: .9rem;
+      font-weight: 650;
+    }
+    .board-title span.sub { font-size: .78rem; color: var(--muted); font-weight: 500; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 4px;
+      aspect-ratio: 1 / 1;
+      user-select: none;
+    }
+    .cell {
+      background: var(--surface-2);
+      border: 1px solid #262626;
+      border-radius: 5px;
+      display: grid;
+      place-items: center;
+      font-size: .75rem;
+      font-weight: 700;
+      transition: background .12s, transform .08s, border-color .12s;
+    }
+    .cell.clickable { cursor: pointer; }
+    .cell.clickable:hover { border-color: var(--accent); background: #232936; }
+    .cell.preview { background: rgba(59, 130, 246, .35); border-color: var(--accent); }
+    .cell.preview-invalid { background: rgba(239, 68, 68, .35); border-color: var(--hit); }
+    .cell.ship { background: rgba(59, 130, 246, .28); border-color: var(--ship); }
+    .cell.miss { background: #18181b; border-color: #27272a; }
+    .cell.miss::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--miss);
+    }
+    .cell.hit { background: rgba(239, 68, 68, .25); border-color: var(--hit); color: var(--hit); }
+    .cell.hit::after { content: "✕"; }
+    .cell.sunk { background: var(--sunk); border-color: var(--hit); color: #fff; }
+    .cell.sunk::after { content: "✕"; }
+
+    .ship-list {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .ship-tag {
+      font-size: .72rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .ship-tag.active { border-color: var(--accent); color: var(--text); }
+    .ship-tag.placed { text-decoration: line-through; opacity: .5; }
+    .ship-tag.destroyed { border-color: var(--hit); color: var(--hit); text-decoration: line-through; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <nav class="topbar">
+    <a class="back" href="../">← Back to Games</a>
+    <span>Multi-Room P2P</span>
+  </nav>
+
+  <header class="header">
+    <h1>Battleship<span style="color:var(--accent)">.</span></h1>
+    <div class="status-bar">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Initializing network...</span>
+    </div>
+  </header>
+
+  <!-- Lobby -->
+  <div class="lobby-box" id="lobby">
+    <div>
+      <h2>Tạo phòng mới</h2>
+      <p>Nhập tên phòng bất kỳ để làm chủ phòng và đợi bạn bè vào.</p>
+      <div class="row" style="margin-top: 10px;">
+        <input type="text" id="hostInput" maxlength="12" placeholder="VD: PHONG1" />
+        <button class="primary" id="hostBtn">Tạo phòng</button>
+      </div>
+    </div>
+
+<div class="divider">HOẶC</div>
+
+    <div>
+      <h2>Vào phòng của bạn bè</h2>
+      <p>Nhập đúng tên phòng mà bạn bè đã tạo để kết nối.</p>
+      <div class="row" style="margin-top: 10px;">
+        <input type="text" id="joinInput" maxlength="12" placeholder="VD: PHONG1" />
+        <button class="primary" id="joinBtn">Vào phòng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Arena -->
+  <section class="arena" id="arena">
+    <div class="controls" id="setupControls">
+      <button id="rotateBtn">Xoay tàu: Ngang (Phím R)</button>
+      <button id="randomBtn">Xếp ngẫu nhiên</button>
+      <button id="clearBtn">Xóa bàn cờ</button>
+      <button class="primary" id="readyBtn" disabled>Sẵn sàng chiến đấu</button>
+    </div>
+
+    <div class="controls hidden" id="endControls">
+      <button class="primary" id="rematchBtn">Chơi ván mới</button>
+    </div>
+
+    <div class="boards">
+      <div class="board-wrap">
+        <div class="board-title">
+          <span>Hạm đội của bạn</span>
+          <span class="sub" id="myBoardSub">Đặt tàu chiến</span>
+        </div>
+        <div class="grid" id="myGrid"></div>
+        <div class="ship-list" id="myShipList"></div>
+      </div>
+
+      <div class="board-wrap" id="enemyWrap" style="opacity:.55">
+        <div class="board-title">
+          <span>Vùng biển địch</span>
+          <span class="sub" id="enemyBoardSub">Đang chờ...</span>
+        </div>
+        <div class="grid" id="enemyGrid"></div>
+        <div class="ship-list" id="enemyShipList"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const FLEET_CONFIG = [
+      { id: "carrier", name: "Carrier", size: 5 },
+      { id: "battleship", name: "Battleship", size: 4 },
+      { id: "cruiser", name: "Cruiser", size: 3 },
+      { id: "submarine", name: "Submarine", size: 3 },
+      { id: "destroyer", name: "Destroyer", size: 2 }
+    ];
+    const PREFIX = "h4ry46-bs-v2-";
+
+    let peer = null;
+    let conn = null;
+    let isHost = false;
+
+    let phase = "lobby"; 
+    let orientation = "H"; 
+    let selectedShipIdx = 0;
+    let myShips = []; 
+    let enemySunkIds = new Set();
+    let myShots = new Map(); 
+    let enemyShots = new Map(); 
+    let myReady = false;
+    let enemyReady = false;
+    let myTurn = false;
+
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const lobbyEl = document.getElementById("lobby");
+    const arenaEl = document.getElementById("arena");
+    const myGridEl = document.getElementById("myGrid");
+    const enemyGridEl = document.getElementById("enemyGrid");
+
+    function setStatus(text, state = "") {
+      statusText.textContent = text;
+      statusDot.className = "dot" + (state ? ` ${state}` : "");
+    }
+
+    function initPeer(customId = null) {
+      if (peer) peer.destroy();
+      peer = customId ? new Peer(PREFIX + customId) : new Peer();
+
+      peer.on("open", (id) => {
+        setStatus("Đã kết nối máy chủ lưới. Sẵn sàng tạo hoặc vào phòng.", "online");
+        if (customId) {
+          isHost = true;
+          setStatus(`Đã mở phòng [${customId}]. Đang chờ người chơi khác vào...`, "online");
+        }
+      });
+
+      peer.on("connection", (incoming) => {
+        if (conn) {
+          incoming.close();
+          return;
+        }
+        isHost = true;
+        setupConnection(incoming);
+      });
+
+      peer.on("error", (err) => {
+        if (err.type === "unavailable-ID") {
+          alert("Tên phòng này đã có người dùng hoặc đang bận. Vui lòng chọn tên phòng khác!");
+        } else {
+          setStatus(`Lỗi mạng: ${err.type}`);
+        }
+      });
+    }
+
+    function joinRoom(roomName) {
+      if (!roomName) return alert("Vui lòng nhập tên phòng!");
+      isHost = false;
+      setStatus(`Đang kết nối vào phòng [${roomName}]...`);
+      
+      // Khởi tạo peer ngẫu nhiên rồi kết nối đến PeerID của phòng
+      if (peer) peer.destroy();
+      peer = new Peer();
+
+      peer.on("open", () => {
+        const outgoing = peer.connect(PREFIX + roomName, { reliable: true });
+        setupConnection(outgoing);
+      });
+
+      peer.on("error", (err) => {
+        setStatus(`Không thể vào phòng: ${err.type}. Kiểm tra lại tên phòng.`);
+      });
+    }
+
+    function setupConnection(connection) {
+      conn = connection;
+
+      conn.on("open", () => {
+        lobbyEl.classList.add("hidden");
+        arenaEl.classList.add("active");
+        startSetupPhase();
+      });
+
+      conn.on("data", handleMessage);
+
+      conn.on("close", () => {
+        phase = "over";
+        setStatus("Đối thủ đã rời phòng.");
+        document.getElementById("setupControls").classList.add("hidden");
+        document.getElementById("endControls").classList.remove("hidden");
+      });
+    }
+
+    function send(payload) {
+      if (conn && conn.open) conn.send(payload);
+    }
+
+    function buildGrids() {
+      myGridEl.innerHTML = "";
+      enemyGridEl.innerHTML = "";
+
+      for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
+          const myCell = document.createElement("div");
+          myCell.className = "cell";
+          myCell.dataset.r = r;
+          myCell.dataset.c = c;
+          myCell.addEventListener("mouseenter", () => previewShip(r, c));
+          myCell.addEventListener("mouseleave", clearPreview);
+          myCell.addEventListener("click", () => placeShipAt(r, c));
+          myGridEl.appendChild(myCell);
+
+          const enCell = document.createElement("div");
+          enCell.className = "cell";
+          enCell.dataset.r = r;
+          enCell.dataset.c = c;
+          enCell.addEventListener("click", () => fireAt(r, c));
+          enemyGridEl.appendChild(enCell);
+        }
+      }
+    }
+
+    function startSetupPhase() {
+      phase = "setup";
+      myShips = [];
+      enemySunkIds.clear();
+      myShots.clear();
+      enemyShots.clear();
+      myReady = false;
+      enemyReady = false;
+      selectedShipIdx = 0;
+
+      document.getElementById("setupControls").classList.remove("hidden");
+      document.getElementById("endControls").classList.add("hidden");
+      document.getElementById("readyBtn").disabled = true;
+      document.getElementById("readyBtn").textContent = "Sẵn sàng chiến đấu";
+      document.getElementById("enemyWrap").style.opacity = ".55";
+      document.getElementById("myBoardSub").textContent = "Đặt tàu chiến";
+      document.getElementById("enemyBoardSub").textContent = "Đang chờ...";
+
+      buildGrids();
+      renderBoards();
+      setStatus("Đã kết nối! Hãy sắp xếp 5 tàu chiến của bạn.", "online");
+    }
+
+    function getPlacementCells(r, c, size, dir) {
+      const cells = [];
+      for (let i = 0; i < size; i++) {
+        const nr = dir === "V" ? r + i : r;
+        const nc = dir === "H" ? c + i : c;
+        if (nr > 9 || nc > 9) return null;
+        cells.push({ r: nr, c: nc });
+      }
+      const occupied = new Set(myShips.flatMap(s => s.cells.map(p => `${p.r},${p.c}`)));
+      if (cells.some(p => occupied.has(`${p.r},${p.c}`))) return null;
+      return cells;
+    }
+
+    function clearPreview() {
+      myGridEl.querySelectorAll(".cell").forEach(el => {
+        el.classList.remove("preview", "preview-invalid");
+      });
+    }
+
+    function previewShip(r, c) {
+      if (phase !== "setup" || myReady || selectedShipIdx >= FLEET_CONFIG.length) return;
+      clearPreview();
+      const ship = FLEET_CONFIG[selectedShipIdx];
+      const validCells = getPlacementCells(r, c, ship.size, orientation);
+
+      if (validCells) {
+        validCells.forEach(p => {
+          const el = myGridEl.children[p.r * 10 + p.c];
+          if (el) el.classList.add("preview");
+        });
+      } else {
+        for (let i = 0; i < ship.size; i++) {
+          const nr = orientation === "V" ? r + i : r;
+          const nc = orientation === "H" ? c + i : c;
+          if (nr <= 9 && nc <= 9) {
+            myGridEl.children[nr * 10 + nc].classList.add("preview-invalid");
+          }
+        }
+      }
+    }
+
+    function placeShipAt(r, c) {
+      if (phase !== "setup" || myReady || selectedShipIdx >= FLEET_CONFIG.length) return;
+      const ship = FLEET_CONFIG[selectedShipIdx];
+      const cells = getPlacementCells(r, c, ship.size, orientation);
+      if (!cells) return;
+
+      myShips.push({ ...ship, cells, hits: new Set() });
+      selectedShipIdx++;
+      clearPreview();
+      renderBoards();
+
+      if (selectedShipIdx === FLEET_CONFIG.length) {
+        document.getElementById("readyBtn").disabled = false;
+      }
+    }
+
+    function randomizeFleet() {
+      if (phase !== "setup" || myReady) return;
+      myShips = [];
+      for (const ship of FLEET_CONFIG) {
+        let placed = false;
+        while (!placed) {
+          const dir = Math.random() < 0.5 ? "H" : "V";
+          const r = Math.floor(Math.random() * 10);
+          const c = Math.floor(Math.random() * 10);
+          const cells = getPlacementCells(r, c, ship.size, dir);
+          if (cells) {
+            myShips.push({ ...ship, cells, hits: new Set() });
+            placed = true;
+          }
+        }
+      }
+      selectedShipIdx = FLEET_CONFIG.length;
+      document.getElementById("readyBtn").disabled = false;
+      renderBoards();
+    }
+
+    function checkBattleStart() {
+      if (myReady && enemyReady) {
+        phase = "battle";
+        document.getElementById("setupControls").classList.add("hidden");
+        document.getElementById("enemyWrap").style.opacity = "1";
+        myTurn = isHost;
+        updateTurnUI();
+        renderBoards();
+      }
+    }
+
+    function updateTurnUI() {
+      if (phase !== "battle") return;
+      if (myTurn) {
+        setStatus("ĐẾN LƯỢT BẠN — Bấm vào vùng biển địch để tấn công!", "turn");
+        document.getElementById("enemyBoardSub").textContent = "Đã sẵn sàng bắn";
+        document.getElementById("myBoardSub").textContent = "Phòng thủ";
+      } else {
+        setStatus("LƯỢT ĐỐI THỦ — Đang chờ đối phương ra đòn...", "online");
+        document.getElementById("enemyBoardSub").textContent = "Đối phương đang nghĩ...";
+        document.getElementById("myBoardSub").textContent = "Đang chịu hiểm họa";
+      }
+    }
+
+    function fireAt(r, c) {
+      if (phase !== "battle" || !myTurn) return;
+      const key = `${r},${c}`;
+      if (myShots.has(key)) return;
+
+      myTurn = false;
+      updateTurnUI();
+      send({ type: "FIRE", r, c });
+    }
+
+    function handleMessage(msg) {
+      if (msg.type === "READY") {
+        enemyReady = true;
+        if (!myReady) setStatus("Đối thủ đã sẵn sàng! Hãy xếp xong tàu của bạn.", "online");
+        checkBattleStart();
+      } else if (msg.type === "FIRE") {
+        const key = `${msg.r},${msg.c}`;
+        let hitShip = null;
+        for (const ship of myShips) {
+          if (ship.cells.some(p => p.r === msg.r && p.c === msg.c)) {
+            ship.hits.add(key);
+            hitShip = ship;
+            break;
+          }
+        }
+
+        if (!hitShip) {
+          enemyShots.set(key, "miss");
+          send({ type: "RESULT", r: msg.r, c: msg.c, outcome: "miss" });
+          myTurn = true;
+          renderBoards();
+          updateTurnUI();
+        } else {
+          const isSunk = hitShip.hits.size === hitShip.size;
+          if (isSunk) {
+            hitShip.cells.forEach(p => enemyShots.set(`${p.r},${p.c}`, "sunk"));
+          } else {
+            enemyShots.set(key, "hit");
+          }
+
+          const allSunk = myShips.every(s => s.hits.size === s.size);
+          send({
+            type: "RESULT",
+            r: msg.r,
+            c: msg.c,
+            outcome: isSunk ? "sunk" : "hit",
+            sunkShip: isSunk ? { id: hitShip.id, name: hitShip.name, cells: hitShip.cells } : null,
+            gameOver: allSunk
+          });
+
+          renderBoards();
+          if (allSunk) {
+            endGame(false);
+          } else {
+            myTurn = true;
+            updateTurnUI();
+          }
+        }
+      } else if (msg.type === "RESULT") {
+        const key = `${msg.r},${msg.c}`;
+        if (msg.outcome === "miss") {
+          myShots.set(key, "miss");
+        } else if (msg.outcome === "hit") {
+          myShots.set(key, "hit");
+        } else if (msg.outcome === "sunk" && msg.sunkShip) {
+          enemySunkIds.add(msg.sunkShip.id);
+          msg.sunkShip.cells.forEach(p => myShots.set(`${p.r},${p.c}`, "sunk"));
+        }
+
+        renderBoards();
+        if (msg.gameOver) {
+          endGame(true);
+        }
+      } else if (msg.type === "REMATCH") {
+        startSetupPhase();
+      }
+    }
+
+    function endGame(won) {
+      phase = "over";
+      myTurn = false;
+      renderBoards();
+      setStatus(won ? "CHIẾN THẮNG! Bạn đã tiêu diệt toàn bộ hạm đội địch!" : "THẤT BẠI! Hạm đội của bạn đã bị bắn chìm.", won ? "turn" : "");
+      document.getElementById("enemyBoardSub").textContent = won ? "Đã phá hủy" : "Bị tiêu diệt";
+      document.getElementById("endControls").classList.remove("hidden");
+    }
+
+    function renderBoards() {
+      const myShipCells = new Set(myShips.flatMap(s => s.cells.map(p => `${p.r},${p.c}`)));
+
+      for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
+          const idx = r * 10 + c;
+          const key = `${r},${c}`;
+          const cell = myGridEl.children[idx];
+          cell.className = "cell";
+          if (phase === "setup" && !myReady) cell.classList.add("clickable");
+
+          const shotState = enemyShots.get(key);
+          if (shotState) {
+            cell.classList.add(shotState);
+          } else if (myShipCells.has(key)) {
+            cell.classList.add("ship");
+          }
+        }
+      }
+
+      for (let r = 0; r < 10; r++) {
+        for (let c = 0; c < 10; c++) {
+          const idx = r * 10 + c;
+          const key = `${r},${c}`;
+          const cell = enemyGridEl.children[idx];
+          cell.className = "cell";
+
+          const shotState = myShots.get(key);
+          if (shotState) {
+            cell.classList.add(shotState);
+          } else if (phase === "battle" && myTurn) {
+            cell.classList.add("clickable");
+          }
+        }
+      }
+
+      document.getElementById("myShipList").innerHTML = FLEET_CONFIG.map((s, idx) => {
+        const placedObj = myShips.find(m => m.id === s.id);
+        let cls = "ship-tag";
+        if (phase === "setup") {
+          if (placedObj) cls += " placed";
+          else if (idx === selectedShipIdx) cls += " active";
+        } else if (placedObj && placedObj.hits.size === placedObj.size) {
+          cls += " destroyed";
+        }
+        return `<span class="${cls}">${s.name} (${s.size})</span>`;
+      }).join("");
+
+      document.getElementById("enemyShipList").innerHTML = FLEET_CONFIG.map(s => {
+        const cls = "ship-tag" + (enemySunkIds.has(s.id) ? " destroyed" : "");
+        return `<span class="${cls}">${s.name} (${s.size})</span>`;
+      }).join("");
+    }
+
+    // Gán sự kiện giao diện
+    document.getElementById("hostBtn").addEventListener("click", () => {
+      const name = document.getElementById("hostInput").value.trim().toUpperCase();
+      if (!name) return alert("Vui lòng nhập tên phòng!");
+      initPeer(name);
+    });
+
+    document.getElementById("joinBtn").addEventListener("click", () => {
+      const name = document.getElementById("joinInput").value.trim().toUpperCase();
+      joinRoom(name);
+    });
+
+    function toggleOrientation() {
+      orientation = orientation === "H" ? "V" : "H";
+      document.getElementById("rotateBtn").textContent =
+        `Xoay tàu: ${orientation === "H" ? "Ngang" : "Dọc"} (Phím R)`;
+    }
+
+    document.getElementById("rotateBtn").addEventListener("click", toggleOrientation);
+    document.addEventListener("keydown", (e) => {
+      if ((e.key === "r" || e.key === "R") && phase === "setup" && !myReady) {
+        toggleOrientation();
+      }
+    });
+
+    document.getElementById("randomBtn").addEventListener("click", randomizeFleet);
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if (phase !== "setup" || myReady) return;
+      myShips = [];
+      selectedShipIdx = 0;
+      document.getElementById("readyBtn").disabled = true;
+      renderBoards();
+    });
+
+    document.getElementById("readyBtn").addEventListener("click", () => {
+      if (myShips.length !== FLEET_CONFIG.length) return;
+      myReady = true;
+      document.getElementById("readyBtn").disabled = true;
+      document.getElementById("readyBtn").textContent = "Đang chờ đối thủ...";
+      document.getElementById("myBoardSub").textContent = "Đã khóa hạm đội";
+      send({ type: "READY" });
+      if (!enemyReady) setStatus("Đã sẵn sàng! Đang đợi đối thủ xếp xong tàu...", "online");
+      renderBoards();
+      checkBattleStart();
+    });
+
+    document.getElementById("rematchBtn").addEventListener("click", () => {
+      send({ type: "REMATCH" });
+      startSetupPhase();
+    });
+
+    // Chạy khởi động ngầm ban đầu
+    initPeer();
+  </script>
+</body>
+</html>
