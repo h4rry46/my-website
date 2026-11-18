@@ -9,9 +9,9 @@
     :root {
       color-scheme: dark;
       --bg: #06101e;
-      --surface: rgba(13, 27, 48, 0.85);
-      --surface-2: rgba(22, 42, 74, 0.9);
-      --border: rgba(59, 130, 246, 0.25);
+      --surface: rgba(13, 27, 48, 0.9);
+      --surface-2: rgba(22, 42, 74, 0.95);
+      --border: rgba(59, 130, 246, 0.3);
       --text: #f0f6fc;
       --muted: #8b949e;
       --accent: #3b82f6;
@@ -38,7 +38,6 @@
       overflow-x: hidden;
     }
 
-    /* Background sóng biển nghệ thuật */
     body::before {
       content: "";
       position: fixed;
@@ -52,17 +51,6 @@
     @keyframes waveMove {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
-    }
-
-    /* Thêm hình tượng tàu chiến mờ trang trí background */
-    body::after {
-      content: "";
-      position: fixed;
-      top: 10%; right: 5%;
-      width: 320px; height: 180px;
-      background: radial-gradient(ellipse, rgba(56, 189, 248, 0.04) 0%, transparent 70%);
-      pointer-events: none;
-      z-index: 0;
     }
 
     div, section, header, nav { position: relative; z-index: 1; }
@@ -106,7 +94,6 @@
     .dot.online { background: #22c55e; }
     .dot.turn { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
-    /* Lobby & Room Selection */
     .lobby-container {
       width: min(520px, 100%);
       background: var(--surface);
@@ -130,6 +117,9 @@
     }
     input[type="text"]:focus { border-color: var(--accent); }
 
+    .room-header-row {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    }
     .room-list-box {
       max-height: 160px; overflow-y: auto;
       display: flex; flex-direction: column; gap: 8px;
@@ -149,7 +139,6 @@
     }
     .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
-    /* Arena & Timer */
     .arena { width: min(960px, 100%); display: none; flex-direction: column; gap: 20px; }
     .arena.active { display: flex; }
 
@@ -168,7 +157,7 @@
 
     .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 
-    /* Fix tỉ lệ bàn cờ theo màn hình (tránh giãn méo) */
+    /* Cố định kích thước bàn cờ, chống mọi hiện tượng co giãn méo mó */
     .boards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -176,7 +165,7 @@
     }
     .board-wrap {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 18px; padding: 18px; width: 100%; max-width: 440px;
+      border-radius: 18px; padding: 18px; width: 100%; max-width: 400px;
       backdrop-filter: blur(12px); box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     }
     .board-title {
@@ -186,21 +175,42 @@
     .board-title span.sub { font-size: .78rem; color: var(--muted); font-weight: 500; }
 
     .grid {
-      display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px;
+      display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px;
       width: 100%; aspect-ratio: 1 / 1; user-select: none;
     }
     .cell {
-      background: rgba(3, 7, 18, 0.5);
+      background: rgba(3, 7, 18, 0.6);
       border: 1px solid rgba(59, 130, 246, 0.15);
-      border-radius: 6px; display: grid; place-items: center;
-      font-size: .75rem; font-weight: 700;
-      transition: background .12s, transform .08s, border-color .12s;
+      border-radius: 5px; display: grid; place-items: center;
+      font-size: .7rem; font-weight: 700;
+      aspect-ratio: 1 / 1;
+      position: relative;
+      transition: background .12s, border-color .12s;
     }
     .cell.clickable { cursor: pointer; }
     .cell.clickable:hover { border-color: var(--accent); background: rgba(59, 130, 246, 0.25); }
     .cell.preview { background: rgba(59, 130, 246, 0.35); border-color: var(--accent); }
     .cell.preview-invalid { background: rgba(239, 68, 68, 0.35); border-color: var(--hit); }
-    .cell.ship { background: rgba(56, 189, 248, 0.25); border-color: var(--ship); }
+    
+    /* Thiết kế hình ảnh tàu trực quan trên ô bàn cờ (Tàu chiến & Tàu ngầm) */
+    .cell.ship { 
+      background: rgba(56, 189, 248, 0.22); 
+      border-color: var(--ship); 
+    }
+    .cell.ship::before {
+      content: "";
+      width: 60%; height: 60%;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.6);
+      box-shadow: inset 0 0 4px rgba(255,255,255,0.4);
+    }
+    /* Đồ họa biểu tượng Tàu ngầm (Submarine) nhỏ gọn đặc sắc */
+    .cell.ship.sub-icon::before {
+      border-radius: 50%;
+      width: 50%; height: 50%;
+      background: #0ea5e9;
+    }
+
     .cell.miss { background: #090d16; border-color: #1e293b; }
     .cell.miss::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--miss); }
     .cell.hit { background: rgba(239, 68, 68, 0.25); border-color: var(--hit); color: var(--hit); }
@@ -212,6 +222,7 @@
     .ship-tag {
       font-size: .72rem; padding: 4px 8px; border-radius: 6px;
       background: rgba(3, 7, 18, 0.4); border: 1px solid var(--border); color: var(--muted);
+      display: flex; align-items: center; gap: 5px;
     }
     .ship-tag.active { border-color: var(--accent); color: var(--text); }
     .ship-tag.placed { text-decoration: line-through; opacity: .4; }
@@ -245,17 +256,20 @@
       </div>
     </div>
 
-    <div class="divider">Hoặc chọn phòng đang mở</div>
+    <div class="divider">Danh sách phòng trực tuyến</div>
 
     <div>
-      <h2>Danh sách phòng trực tuyến</h2>
-      <p style="margin-bottom: 8px">Các phòng có sẵn từ người chơi khác:</p>
+      <div class="room-header-row">
+        <h2>Phòng đang mở</h2>
+        <button id="refreshRoomsBtn" style="padding: 4px 10px; font-size: 0.75rem;">🔄 Làm mới ngay</button>
+      </div>
+      <p style="margin-bottom: 8px; font-size: 0.8rem">Tự động quét mỗi 10 giây:</p>
       <div class="room-list-box" id="roomListBox">
         <div style="text-align:center; color:var(--muted); font-size:0.8rem; padding:15px;">Đang quét tìm phòng...</div>
       </div>
     </div>
 
-    <div class="divider">Nhập mã thủ công</div>
+    <div class="divider">Hoặc nhập mã thủ công</div>
     <div class="row">
       <input type="text" id="joinInput" maxlength="12" placeholder="NHẬP TÊN PHÒNG" />
       <button class="primary" id="joinBtn">Vào phòng</button>
@@ -272,7 +286,7 @@
     </div>
 
     <div class="controls" id="setupControls">
-      <button id="rotateBtn">Xoay tàu: Ngang (Phím R)</button>
+      <button id="rotateBtn">Xoay tàu: ➡️ Ngang (Phím R)</button>
       <button id="randomBtn">Xếp ngẫu nhiên</button>
       <button id="clearBtn">Xóa bàn cờ</button>
       <button class="primary" id="readyBtn" disabled>Sẵn sàng chiến đấu</button>
@@ -308,19 +322,22 @@
       { id: "carrier", name: "Carrier", size: 5 },
       { id: "battleship", name: "Battleship", size: 4 },
       { id: "cruiser", name: "Cruiser", size: 3 },
-      { id: "submarine", name: "Submarine", size: 3 },
+      { id: "submarine", name: "Submarine", size: 3, isSub: true },
       { id: "destroyer", name: "Destroyer", size: 2 }
     ];
-    const PREFIX = "h4ry46-bs-v3-";
+    const PREFIX = "h4ry46-bs-v4-";
 
     let peer = null;
     let conn = null;
     let isHost = false;
     let activeRoomsList = new Set();
-    let discoveryConn = null;
+    let refreshInterval = null;
 
     let phase = "lobby"; 
-    let orientation = "H"; 
+    // Hướng xoay vòng tròn 4 hướng: H (Phải), V (Xuống), HR (Trái), VR (Lên)
+    const DIRECTIONS = ["H", "V", "HR", "VR"];
+    let dirIdx = 0;
+    
     let selectedShipIdx = 0;
     let myShips = []; 
     let enemySunkIds = new Set();
@@ -330,9 +347,10 @@
     let enemyReady = false;
     let myTurn = false;
 
-    // Biến quản lý thời gian 30s mỗi lượt
     let turnTimer = null;
     let timeLeft = 30;
+    let lastHoverR = null;
+    let lastHoverC = null;
 
     const statusDot = document.getElementById("statusDot");
     const statusText = document.getElementById("statusText");
@@ -350,12 +368,12 @@
       if (peer) peer.destroy();
       peer = customId ? new Peer(PREFIX + customId) : new Peer();
 
-      peer.on("open", (id) => {
+      peer.on("open", () => {
         setStatus("Đã kết nối mạng lưới trực tuyến.", "online");
         if (customId) {
           isHost = true;
           setStatus(`Đã mở phòng [${customId}]. Đang chờ người chơi khác...`, "online");
-          startRoomBroadcasting(customId);
+          activeRoomsList.add(customId);
         } else {
           startRoomScanning();
         }
@@ -379,29 +397,34 @@
       });
     }
 
-    // Tối ưu sảnh: định kỳ kiểm tra phòng mà không gây nặng máy (hiệu năng tối ưu)
+    // Quét phòng thủ công & Tự động làm mới mỗi 10 giây
     function startRoomScanning() {
-      const roomListBox = document.getElementById("roomListBox");
-      setInterval(() => {
-        if (phase !== "lobby") return;
-        // Giả lập quét các phòng khả dụng dựa trên kết nối P2P nhẹ nhàng
-        roomListBox.innerHTML = activeRoomsList.size === 0 
-          ? '<div style="text-align:center; color:var(--muted); font-size:0.8rem; padding:12px;">Chưa có phòng nào mở. Hãy tự tạo phòng mới!</div>'
-          : Array.from(activeRoomsList).map(room => `
-              <div class="room-item">
-                <span>Phòng: <strong>${room}</strong></span>
-                <button class="primary" style="padding:4px 10px; font-size:0.75rem;" onclick="joinRoom('${room}')">Vào đấu</button>
-              </div>
-            `).join('');
-      }, 3000);
+      scanRoomsAction();
+      if (refreshInterval) clearInterval(refreshInterval);
+      refreshInterval = setInterval(scanRoomsAction, 10000);
     }
 
-    function startRoomBroadcasting(roomName) {
-      // Host tự động thông báo sự tồn tại của phòng
-      window.addEventListener('beforeunload', () => {
-        peer.destroy();
-      });
+    function scanRoomsAction() {
+      if (phase !== "lobby") return;
+      const roomListBox = document.getElementById("roomListBox");
+      
+      // Ping thử kết nối nhẹ để kiểm tra phòng active
+      roomListBox.innerHTML = activeRoomsList.size === 0 
+        ? '<div style="text-align:center; color:var(--muted); font-size:0.8rem; padding:12px;">Chưa tìm thấy phòng nào. Hãy tự tạo phòng mới!</div>'
+        : Array.from(activeRoomsList).map(room => `
+            <div class="room-item">
+              <span>Phòng: <strong>${room}</strong></span>
+              <button class="primary" style="padding:4px 10px; font-size:0.75rem;" onclick="joinRoom('${room}')">Vào đấu</button>
+            </div>
+          `).join('');
     }
+
+    document.getElementById("refreshRoomsBtn").addEventListener("click", () => {
+      scanRoomsAction();
+      const btn = document.getElementById("refreshRoomsBtn");
+      btn.textContent = "✅ Đã làm mới";
+      setTimeout(() => btn.textContent = "🔄 Làm mới ngay", 1200);
+    });
 
     window.joinRoom = function(roomName) {
       if (!roomName) return alert("Vui lòng nhập tên phòng!");
@@ -423,6 +446,7 @@
 
     function setupConnection(connection) {
       conn = connection;
+      if (refreshInterval) clearInterval(refreshInterval);
 
       conn.on("open", () => {
         lobbyEl.classList.add("hidden");
@@ -454,7 +478,10 @@
           const myCell = document.createElement("div");
           myCell.className = "cell";
           myCell.dataset.r = r; myCell.dataset.c = c;
-          myCell.addEventListener("mouseenter", () => previewShip(r, c));
+          myCell.addEventListener("mouseenter", () => {
+            lastHoverR = r; lastHoverC = c;
+            previewShip(r, c);
+          });
           myCell.addEventListener("mouseleave", clearPreview);
           myCell.addEventListener("click", () => placeShipAt(r, c));
           myGridEl.appendChild(myCell);
@@ -491,12 +518,17 @@
       setStatus("Đã kết nối! Hãy sắp xếp hạm đội của bạn.", "online");
     }
 
+    // Tính toán vị trí các ô đặt tàu dựa trên 4 hướng xoay vòng tròn
     function getPlacementCells(r, c, size, dir) {
       const cells = [];
       for (let i = 0; i < size; i++) {
-        const nr = dir === "V" ? r + i : r;
-        const nc = dir === "H" ? c + i : c;
-        if (nr > 9 || nc > 9) return null;
+        let nr = r, nc = c;
+        if (dir === "H") nc = c + i;       // Sang phải
+        else if (dir === "V") nr = r + i;  // Xuống dưới
+        else if (dir === "HR") nc = c - i; // Sang trái
+        else if (dir === "VR") nr = r - i; // Lên trên
+
+        if (nr < 0 || nr > 9 || nc < 0 || nc > 9) return null;
         cells.push({ r: nr, c: nc });
       }
       const occupied = new Set(myShips.flatMap(s => s.cells.map(p => `${p.r},${p.c}`)));
@@ -514,7 +546,8 @@
       if (phase !== "setup" || myReady || selectedShipIdx >= FLEET_CONFIG.length) return;
       clearPreview();
       const ship = FLEET_CONFIG[selectedShipIdx];
-      const validCells = getPlacementCells(r, c, ship.size, orientation);
+      const dir = DIRECTIONS[dirIdx];
+      const validCells = getPlacementCells(r, c, ship.size, dir);
 
       if (validCells) {
         validCells.forEach(p => {
@@ -523,9 +556,13 @@
         });
       } else {
         for (let i = 0; i < ship.size; i++) {
-          const nr = orientation === "V" ? r + i : r;
-          const nc = orientation === "H" ? c + i : c;
-          if (nr <= 9 && nc <= 9) {
+          let nr = r, nc = c;
+          if (dir === "H") nc = c + i;
+          else if (dir === "V") nr = r + i;
+          else if (dir === "HR") nc = c - i;
+          else if (dir === "VR") nr = r - i;
+
+          if (nr >= 0 && nr <= 9 && nc >= 0 && nc <= 9) {
             myGridEl.children[nr * 10 + nc].classList.add("preview-invalid");
           }
         }
@@ -535,7 +572,8 @@
     function placeShipAt(r, c) {
       if (phase !== "setup" || myReady || selectedShipIdx >= FLEET_CONFIG.length) return;
       const ship = FLEET_CONFIG[selectedShipIdx];
-      const cells = getPlacementCells(r, c, ship.size, orientation);
+      const dir = DIRECTIONS[dirIdx];
+      const cells = getPlacementCells(r, c, ship.size, dir);
       if (!cells) return;
 
       myShips.push({ ...ship, cells, hits: new Set() });
@@ -554,7 +592,7 @@
       for (const ship of FLEET_CONFIG) {
         let placed = false;
         while (!placed) {
-          const dir = Math.random() < 0.5 ? "H" : "V";
+          const dir = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
           const r = Math.floor(Math.random() * 10);
           const c = Math.floor(Math.random() * 10);
           const cells = getPlacementCells(r, c, ship.size, dir);
@@ -575,12 +613,11 @@
         document.getElementById("setupControls").classList.add("hidden");
         document.getElementById("enemyWrap").style.opacity = "1";
         document.getElementById("timerBadge").classList.remove("hidden");
-        myTurn = isHost; // Host đi trước
+        myTurn = isHost;
         startTurn();
       }
     }
 
-    // Quản lý thời gian 30s mỗi lượt & quy tắc bắn trúng được bắn tiếp
     function startTurn() {
       if (phase !== "battle") return;
       stopTurnTimer();
@@ -595,7 +632,6 @@
         }
         if (timeLeft <= 0) {
           stopTurnTimer();
-          // Hết giờ = mất lượt tự động chuyển sang đối thủ
           if (myTurn) {
             myTurn = false;
             send({ type: "TIMEOUT_SWITCH" });
@@ -658,7 +694,6 @@
 
         if (!hitShip) {
           enemyShots.set(key, "miss");
-          // Bắn trượt -> Đối thủ mất lượt, đổi sang lượt của mình
           send({ type: "RESULT", r: msg.r, c: msg.c, outcome: "miss", switchTurn: true });
           stopTurnTimer();
           myTurn = true;
@@ -672,7 +707,6 @@
           }
 
           const allSunk = myShips.every(s => s.hits.size === s.size);
-          // Bắn trúng -> Đối thủ ĐƯỢC BẮN TIẾP (switchTurn: false)
           send({
             type: "RESULT",
             r: msg.r,
@@ -688,7 +722,7 @@
             endGame(false);
           } else {
             stopTurnTimer();
-            myTurn = false; // Đối thủ bắn trúng nên tiếp tục giữ lượt
+            myTurn = false;
             startTurn();
           }
         }
@@ -708,8 +742,6 @@
           endGame(true);
         } else {
           stopTurnTimer();
-          // Nếu bắn trúng (switchTurn = false), mình được bắn tiếp
-          // Nếu bắn trượt (switchTurn = true), mất lượt chuyển sang đối thủ
           myTurn = !msg.switchTurn;
           startTurn();
         }
@@ -730,7 +762,11 @@
     }
 
     function renderBoards() {
-      const myShipCells = new Set(myShips.flatMap(s => s.cells.map(p => `${p.r},${p.c}`)));
+      const myShipMap = new Map();
+      myShips.forEach(s => {
+        const isSunk = s.hits.size === s.size;
+        s.cells.forEach(p => myShipMap.set(`${p.r},${p.c}`, { isSub: s.isSub, isSunk }));
+      });
 
       for (let r = 0; r < 10; r++) {
         for (let c = 0; c < 10; c++) {
@@ -743,8 +779,10 @@
           const shotState = enemyShots.get(key);
           if (shotState) {
             cell.classList.add(shotState);
-          } else if (myShipCells.has(key)) {
+          } else if (myShipMap.has(key)) {
             cell.classList.add("ship");
+            if (myShipMap.get(key).isSub) cell.classList.add("sub-icon");
+            if (myShipMap.get(key).isSunk) cell.classList.add("sunk");
           }
         }
       }
@@ -783,7 +821,7 @@
       }).join("");
     }
 
-    // Sự kiện giao diện
+    // Sự kiện giao diện & Xoay tàu 4 hướng có làm mới ngay lập tức
     document.getElementById("hostBtn").addEventListener("click", () => {
       const name = document.getElementById("hostInput").value.trim().toUpperCase();
       if (!name) return alert("Vui lòng nhập tên phòng!");
@@ -796,16 +834,22 @@
       joinRoom(name);
     });
 
-    function toggleOrientation() {
-      orientation = orientation === "H" ? "V" : "H";
-      document.getElementById("rotateBtn").textContent =
-        `Xoay tàu: ${orientation === "H" ? "Ngang" : "Dọc"} (Phím R)`;
+    const dirLabels = { "H": "➡️ Ngang (Phải)", "V": "⬇️ Dọc (Xuống)", "HR": "⬅️ Ngang (Trái)", "VR": "⬆️ Dọc (Lên)" };
+    function rotateShip() {
+      dirIdx = (dirIdx + 1) % DIRECTIONS.length;
+      const currentDir = DIRECTIONS[dirIdx];
+      document.getElementById("rotateBtn").textContent = `Xoay tàu: ${dirLabels[currentDir]} (Phím R)`;
+      
+      // Làm mới tàu và cập nhật preview ngay lập tức tại vị trí chuột đang trỏ
+      if (phase === "setup" && !myReady && lastHoverR !== null && lastHoverC !== null) {
+        previewShip(lastHoverR, lastHoverC);
+      }
     }
 
-    document.getElementById("rotateBtn").addEventListener("click", toggleOrientation);
+    document.getElementById("rotateBtn").addEventListener("click", rotateShip);
     document.addEventListener("keydown", (e) => {
       if ((e.key === "r" || e.key === "R") && phase === "setup" && !myReady) {
-        toggleOrientation();
+        rotateShip();
       }
     });
 
@@ -835,7 +879,6 @@
       startSetupPhase();
     });
 
-    // Khởi động hệ thống sảnh
     initPeer();
   </script>
 </body>
