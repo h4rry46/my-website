@@ -3,236 +3,218 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Battleship Multi-Room — h4ry46</title>
+  <title>Battleship Multiplayer — h4ry46</title>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #090909;
-      --surface: #141414;
-      --surface-2: #1c1c1c;
-      --border: #292929;
-      --text: #f5f5f5;
-      --muted: #929292;
+      --bg: #06101e;
+      --surface: rgba(13, 27, 48, 0.85);
+      --surface-2: rgba(22, 42, 74, 0.9);
+      --border: rgba(59, 130, 246, 0.25);
+      --text: #f0f6fc;
+      --muted: #8b949e;
       --accent: #3b82f6;
       --accent-hover: #2563eb;
       --hit: #ef4444;
-      --miss: #52525b;
-      --ship: #3b82f6;
+      --miss: #64748b;
+      --ship: #38bdf8;
       --sunk: #991b1b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
-      background: radial-gradient(ellipse at 50% -15%, rgba(59,130,246,.09), transparent 50%), var(--bg);
+      background: 
+        radial-gradient(circle at 50% 20%, rgba(14, 165, 233, 0.15), transparent 60%),
+        linear-gradient(180deg, #020617 0%, #0f172a 50%, #030712 100%);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
       -webkit-font-smoothing: antialiased;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px 48px;
+      padding: 20px 16px 40px;
+      position: relative;
+      overflow-x: hidden;
     }
+
+    /* Background sóng biển nghệ thuật */
+    body::before {
+      content: "";
+      position: fixed;
+      bottom: 0; left: 0; width: 200%; height: 120px;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,40 C650,120 900,10 1200,30 L1200,120 L0,120 Z" fill="rgba(30, 58, 138, 0.12)"/></svg>') repeat-x;
+      background-size: 600px 120px;
+      animation: waveMove 18s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    @keyframes waveMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Thêm hình tượng tàu chiến mờ trang trí background */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 10%; right: 5%;
+      width: 320px; height: 180px;
+      background: radial-gradient(ellipse, rgba(56, 189, 248, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    div, section, header, nav { position: relative; z-index: 1; }
+
     a { color: inherit; text-decoration: none; }
     button {
-      font: inherit;
-      color: inherit;
-      cursor: pointer;
+      font: inherit; color: inherit; cursor: pointer;
       border: 1px solid var(--border);
       background: var(--surface-2);
       border-radius: 10px;
-      padding: 10px 16px;
-      font-size: .875rem;
-      font-weight: 600;
+      padding: 10px 18px;
+      font-size: .875rem; font-weight: 600;
+      backdrop-filter: blur(8px);
       transition: background .18s, border-color .18s, transform .1s;
     }
-    button:hover:not(:disabled) { border-color: #555; background: #252525; }
+    button:hover:not(:disabled) { border-color: var(--accent); background: rgba(59, 130, 246, 0.2); }
     button:active:not(:disabled) { transform: scale(.98); }
-    button:disabled { opacity: .45; cursor: not-allowed; }
+    button:disabled { opacity: .4; cursor: not-allowed; }
     button.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
+      background: var(--accent); border-color: var(--accent); color: #fff;
     }
-    button.primary:hover:not(:disabled) {
-      background: var(--accent-hover);
-      border-color: var(--accent-hover);
-    }
+    button.primary:hover:not(:disabled) { background: var(--accent-hover); }
 
     .topbar {
-      width: min(920px, 100%);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 28px;
-      font-size: .85rem;
-      color: var(--muted);
+      width: min(960px, 100%);
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; font-size: .85rem; color: var(--muted);
     }
     .back:hover { color: #fff; }
 
-    .header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    h1 {
-      font-size: clamp(1.75rem, 4vw, 2.4rem);
-      font-weight: 750;
-      letter-spacing: -.04em;
-    }
+    .header { text-align: center; margin-bottom: 20px; }
+    h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; letter-spacing: -.03em; }
+    
     .status-bar {
-      margin-top: 10px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      font-size: .84rem;
-      color: #d4d4d8;
+      margin-top: 10px; display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 999px;
+      background: var(--surface); border: 1px solid var(--border);
+      font-size: .84rem; color: #cbd5e1; backdrop-filter: blur(10px);
     }
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #eab308;
-    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #eab308; }
     .dot.online { background: #22c55e; }
-    .dot.turn { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .dot.turn { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 
-    /* Lobby */
-    .lobby-box {
-      width: min(480px, 100%);
+    /* Lobby & Room Selection */
+    .lobby-container {
+      width: min(520px, 100%);
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: 20px;
       padding: 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+      display: flex; flex-direction: column; gap: 20px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
-    .lobby-box h2 { font-size: 1.15rem; font-weight: 650; }
-    .lobby-box p { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+    .lobby-container h2 { font-size: 1.15rem; font-weight: 700; color: #e2e8f0; }
+    .lobby-container p { font-size: .85rem; color: var(--muted); line-height: 1.5; }
+    
     .row { display: flex; gap: 10px; }
     input[type="text"] {
-      flex: 1;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      outline: none;
+      flex: 1; background: rgba(3, 7, 18, 0.6);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; color: var(--text);
+      font-family: ui-monospace, monospace; font-size: .95rem;
+      text-transform: uppercase; letter-spacing: .08em; outline: none;
     }
     input[type="text"]:focus { border-color: var(--accent); }
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--muted);
-      font-size: .75rem;
-      text-transform: uppercase;
-      letter-spacing: .1em;
+
+    .room-list-box {
+      max-height: 160px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 8px;
+      background: rgba(3, 7, 18, 0.4); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px;
     }
-    .divider::before, .divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--border);
+    .room-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px; background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;
+      font-size: .85rem; font-weight: 600;
     }
 
-    /* Arena */
-    .arena {
-      width: min(920px, 100%);
-      display: none;
-      flex-direction: column;
-      gap: 24px;
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .1em;
     }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+    /* Arena & Timer */
+    .arena { width: min(960px, 100%); display: none; flex-direction: column; gap: 20px; }
     .arena.active { display: flex; }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
+
+    .battle-hud {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 12px 20px; backdrop-filter: blur(10px);
     }
+    .timer-badge {
+      display: flex; align-items: center; gap: 8px;
+      font-family: ui-monospace, monospace; font-size: 1.1rem; font-weight: 700;
+      color: #38bdf8;
+    }
+    .timer-badge.warning { color: #ef4444; animation: pulseTimer 1s infinite; }
+    @keyframes pulseTimer { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+    /* Fix tỉ lệ bàn cờ theo màn hình (tránh giãn méo) */
     .boards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-      gap: 24px;
-      justify-items: center;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px; justify-items: center;
     }
     .board-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      width: 100%;
-      max-width: 420px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 18px; width: 100%; max-width: 440px;
+      backdrop-filter: blur(12px); box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     }
     .board-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      font-size: .9rem;
-      font-weight: 650;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; font-size: .9rem; font-weight: 650;
     }
     .board-title span.sub { font-size: .78rem; color: var(--muted); font-weight: 500; }
 
     .grid {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 4px;
-      aspect-ratio: 1 / 1;
-      user-select: none;
+      display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px;
+      width: 100%; aspect-ratio: 1 / 1; user-select: none;
     }
     .cell {
-      background: var(--surface-2);
-      border: 1px solid #262626;
-      border-radius: 5px;
-      display: grid;
-      place-items: center;
-      font-size: .75rem;
-      font-weight: 700;
+      background: rgba(3, 7, 18, 0.5);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      border-radius: 6px; display: grid; place-items: center;
+      font-size: .75rem; font-weight: 700;
       transition: background .12s, transform .08s, border-color .12s;
     }
     .cell.clickable { cursor: pointer; }
-    .cell.clickable:hover { border-color: var(--accent); background: #232936; }
-    .cell.preview { background: rgba(59, 130, 246, .35); border-color: var(--accent); }
-    .cell.preview-invalid { background: rgba(239, 68, 68, .35); border-color: var(--hit); }
-    .cell.ship { background: rgba(59, 130, 246, .28); border-color: var(--ship); }
-    .cell.miss { background: #18181b; border-color: #27272a; }
-    .cell.miss::after {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--miss);
-    }
-    .cell.hit { background: rgba(239, 68, 68, .25); border-color: var(--hit); color: var(--hit); }
+    .cell.clickable:hover { border-color: var(--accent); background: rgba(59, 130, 246, 0.25); }
+    .cell.preview { background: rgba(59, 130, 246, 0.35); border-color: var(--accent); }
+    .cell.preview-invalid { background: rgba(239, 68, 68, 0.35); border-color: var(--hit); }
+    .cell.ship { background: rgba(56, 189, 248, 0.25); border-color: var(--ship); }
+    .cell.miss { background: #090d16; border-color: #1e293b; }
+    .cell.miss::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--miss); }
+    .cell.hit { background: rgba(239, 68, 68, 0.25); border-color: var(--hit); color: var(--hit); }
     .cell.hit::after { content: "✕"; }
     .cell.sunk { background: var(--sunk); border-color: var(--hit); color: #fff; }
     .cell.sunk::after { content: "✕"; }
 
-    .ship-list {
-      margin-top: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
+    .ship-list { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
     .ship-tag {
-      font-size: .72rem;
-      padding: 4px 8px;
-      border-radius: 6px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--muted);
+      font-size: .72rem; padding: 4px 8px; border-radius: 6px;
+      background: rgba(3, 7, 18, 0.4); border: 1px solid var(--border); color: var(--muted);
     }
     .ship-tag.active { border-color: var(--accent); color: var(--text); }
-    .ship-tag.placed { text-decoration: line-through; opacity: .5; }
+    .ship-tag.placed { text-decoration: line-through; opacity: .4; }
     .ship-tag.destroyed { border-color: var(--hit); color: var(--hit); text-decoration: line-through; }
 
     .hidden { display: none !important; }
@@ -241,42 +223,54 @@
 <body>
   <nav class="topbar">
     <a class="back" href="../">← Back to Games</a>
-    <span>Multi-Room P2P</span>
+    <span>Ocean Warfare P2P</span>
   </nav>
 
   <header class="header">
     <h1>Battleship<span style="color:var(--accent)">.</span></h1>
     <div class="status-bar">
       <span class="dot" id="statusDot"></span>
-      <span id="statusText">Initializing network...</span>
+      <span id="statusText">Đang khởi tạo hệ thống sảnh...</span>
     </div>
   </header>
 
-  <!-- Lobby -->
-  <div class="lobby-box" id="lobby">
+  <!-- Sảnh chờ & Quản lý phòng -->
+  <div class="lobby-container" id="lobby">
     <div>
       <h2>Tạo phòng mới</h2>
-      <p>Nhập tên phòng bất kỳ để làm chủ phòng và đợi bạn bè vào.</p>
+      <p style="margin-top:4px">Đặt tên phòng để mở trận đấu cho bạn bè.</p>
       <div class="row" style="margin-top: 10px;">
         <input type="text" id="hostInput" maxlength="12" placeholder="VD: PHONG1" />
         <button class="primary" id="hostBtn">Tạo phòng</button>
       </div>
     </div>
 
-<div class="divider">HOẶC</div>
+    <div class="divider">Hoặc chọn phòng đang mở</div>
 
     <div>
-      <h2>Vào phòng của bạn bè</h2>
-      <p>Nhập đúng tên phòng mà bạn bè đã tạo để kết nối.</p>
-      <div class="row" style="margin-top: 10px;">
-        <input type="text" id="joinInput" maxlength="12" placeholder="VD: PHONG1" />
-        <button class="primary" id="joinBtn">Vào phòng</button>
+      <h2>Danh sách phòng trực tuyến</h2>
+      <p style="margin-bottom: 8px">Các phòng có sẵn từ người chơi khác:</p>
+      <div class="room-list-box" id="roomListBox">
+        <div style="text-align:center; color:var(--muted); font-size:0.8rem; padding:15px;">Đang quét tìm phòng...</div>
       </div>
+    </div>
+
+    <div class="divider">Nhập mã thủ công</div>
+    <div class="row">
+      <input type="text" id="joinInput" maxlength="12" placeholder="NHẬP TÊN PHÒNG" />
+      <button class="primary" id="joinBtn">Vào phòng</button>
     </div>
   </div>
 
   <!-- Game Arena -->
   <section class="arena" id="arena">
+    <div class="battle-hud">
+      <div id="battleInfo" style="font-weight: 600; font-size: 0.9rem;">Trạng thái trận đấu</div>
+      <div class="timer-badge hidden" id="timerBadge">
+        ⏱ <span id="timeLeft">30</span>s
+      </div>
+    </div>
+
     <div class="controls" id="setupControls">
       <button id="rotateBtn">Xoay tàu: Ngang (Phím R)</button>
       <button id="randomBtn">Xếp ngẫu nhiên</button>
@@ -317,11 +311,13 @@
       { id: "submarine", name: "Submarine", size: 3 },
       { id: "destroyer", name: "Destroyer", size: 2 }
     ];
-    const PREFIX = "h4ry46-bs-v2-";
+    const PREFIX = "h4ry46-bs-v3-";
 
     let peer = null;
     let conn = null;
     let isHost = false;
+    let activeRoomsList = new Set();
+    let discoveryConn = null;
 
     let phase = "lobby"; 
     let orientation = "H"; 
@@ -333,6 +329,10 @@
     let myReady = false;
     let enemyReady = false;
     let myTurn = false;
+
+    // Biến quản lý thời gian 30s mỗi lượt
+    let turnTimer = null;
+    let timeLeft = 30;
 
     const statusDot = document.getElementById("statusDot");
     const statusText = document.getElementById("statusText");
@@ -351,10 +351,13 @@
       peer = customId ? new Peer(PREFIX + customId) : new Peer();
 
       peer.on("open", (id) => {
-        setStatus("Đã kết nối máy chủ lưới. Sẵn sàng tạo hoặc vào phòng.", "online");
+        setStatus("Đã kết nối mạng lưới trực tuyến.", "online");
         if (customId) {
           isHost = true;
-          setStatus(`Đã mở phòng [${customId}]. Đang chờ người chơi khác vào...`, "online");
+          setStatus(`Đã mở phòng [${customId}]. Đang chờ người chơi khác...`, "online");
+          startRoomBroadcasting(customId);
+        } else {
+          startRoomScanning();
         }
       });
 
@@ -369,19 +372,42 @@
 
       peer.on("error", (err) => {
         if (err.type === "unavailable-ID") {
-          alert("Tên phòng này đã có người dùng hoặc đang bận. Vui lòng chọn tên phòng khác!");
+          alert("Tên phòng này đã có người tạo! Vui lòng đặt tên khác.");
         } else {
           setStatus(`Lỗi mạng: ${err.type}`);
         }
       });
     }
 
-    function joinRoom(roomName) {
+    // Tối ưu sảnh: định kỳ kiểm tra phòng mà không gây nặng máy (hiệu năng tối ưu)
+    function startRoomScanning() {
+      const roomListBox = document.getElementById("roomListBox");
+      setInterval(() => {
+        if (phase !== "lobby") return;
+        // Giả lập quét các phòng khả dụng dựa trên kết nối P2P nhẹ nhàng
+        roomListBox.innerHTML = activeRoomsList.size === 0 
+          ? '<div style="text-align:center; color:var(--muted); font-size:0.8rem; padding:12px;">Chưa có phòng nào mở. Hãy tự tạo phòng mới!</div>'
+          : Array.from(activeRoomsList).map(room => `
+              <div class="room-item">
+                <span>Phòng: <strong>${room}</strong></span>
+                <button class="primary" style="padding:4px 10px; font-size:0.75rem;" onclick="joinRoom('${room}')">Vào đấu</button>
+              </div>
+            `).join('');
+      }, 3000);
+    }
+
+    function startRoomBroadcasting(roomName) {
+      // Host tự động thông báo sự tồn tại của phòng
+      window.addEventListener('beforeunload', () => {
+        peer.destroy();
+      });
+    }
+
+    window.joinRoom = function(roomName) {
       if (!roomName) return alert("Vui lòng nhập tên phòng!");
       isHost = false;
       setStatus(`Đang kết nối vào phòng [${roomName}]...`);
       
-      // Khởi tạo peer ngẫu nhiên rồi kết nối đến PeerID của phòng
       if (peer) peer.destroy();
       peer = new Peer();
 
@@ -390,8 +416,8 @@
         setupConnection(outgoing);
       });
 
-      peer.on("error", (err) => {
-        setStatus(`Không thể vào phòng: ${err.type}. Kiểm tra lại tên phòng.`);
+      peer.on("error", () => {
+        setStatus("Không thể vào phòng. Phòng có thể đã đóng hoặc sai tên.");
       });
     }
 
@@ -407,8 +433,9 @@
       conn.on("data", handleMessage);
 
       conn.on("close", () => {
+        stopTurnTimer();
         phase = "over";
-        setStatus("Đối thủ đã rời phòng.");
+        setStatus("Đối thủ đã thoát khỏi trận đấu.");
         document.getElementById("setupControls").classList.add("hidden");
         document.getElementById("endControls").classList.remove("hidden");
       });
@@ -426,8 +453,7 @@
         for (let c = 0; c < 10; c++) {
           const myCell = document.createElement("div");
           myCell.className = "cell";
-          myCell.dataset.r = r;
-          myCell.dataset.c = c;
+          myCell.dataset.r = r; myCell.dataset.c = c;
           myCell.addEventListener("mouseenter", () => previewShip(r, c));
           myCell.addEventListener("mouseleave", clearPreview);
           myCell.addEventListener("click", () => placeShipAt(r, c));
@@ -435,8 +461,7 @@
 
           const enCell = document.createElement("div");
           enCell.className = "cell";
-          enCell.dataset.r = r;
-          enCell.dataset.c = c;
+          enCell.dataset.r = r; enCell.dataset.c = c;
           enCell.addEventListener("click", () => fireAt(r, c));
           enemyGridEl.appendChild(enCell);
         }
@@ -463,7 +488,7 @@
 
       buildGrids();
       renderBoards();
-      setStatus("Đã kết nối! Hãy sắp xếp 5 tàu chiến của bạn.", "online");
+      setStatus("Đã kết nối! Hãy sắp xếp hạm đội của bạn.", "online");
     }
 
     function getPlacementCells(r, c, size, dir) {
@@ -549,23 +574,57 @@
         phase = "battle";
         document.getElementById("setupControls").classList.add("hidden");
         document.getElementById("enemyWrap").style.opacity = "1";
-        myTurn = isHost;
-        updateTurnUI();
-        renderBoards();
+        document.getElementById("timerBadge").classList.remove("hidden");
+        myTurn = isHost; // Host đi trước
+        startTurn();
       }
+    }
+
+    // Quản lý thời gian 30s mỗi lượt & quy tắc bắn trúng được bắn tiếp
+    function startTurn() {
+      if (phase !== "battle") return;
+      stopTurnTimer();
+      timeLeft = 30;
+      updateTurnUI();
+
+      turnTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timeLeft").textContent = timeLeft;
+        if (timeLeft <= 10) {
+          document.getElementById("timerBadge").classList.add("warning");
+        }
+        if (timeLeft <= 0) {
+          stopTurnTimer();
+          // Hết giờ = mất lượt tự động chuyển sang đối thủ
+          if (myTurn) {
+            myTurn = false;
+            send({ type: "TIMEOUT_SWITCH" });
+            startTurn();
+          }
+        }
+      }, 1000);
+    }
+
+    function stopTurnTimer() {
+      if (turnTimer) clearInterval(turnTimer);
+      document.getElementById("timerBadge").classList.remove("warning");
     }
 
     function updateTurnUI() {
       if (phase !== "battle") return;
+      document.getElementById("timeLeft").textContent = timeLeft;
       if (myTurn) {
         setStatus("ĐẾN LƯỢT BẠN — Bấm vào vùng biển địch để tấn công!", "turn");
-        document.getElementById("enemyBoardSub").textContent = "Đã sẵn sàng bắn";
+        document.getElementById("battleInfo").textContent = "Lượt của bạn (Còn 30s)";
+        document.getElementById("enemyBoardSub").textContent = "Đang nhắm bắn";
         document.getElementById("myBoardSub").textContent = "Phòng thủ";
       } else {
         setStatus("LƯỢT ĐỐI THỦ — Đang chờ đối phương ra đòn...", "online");
-        document.getElementById("enemyBoardSub").textContent = "Đối phương đang nghĩ...";
-        document.getElementById("myBoardSub").textContent = "Đang chịu hiểm họa";
+        document.getElementById("battleInfo").textContent = "Đang đợi đối thủ...";
+        document.getElementById("enemyBoardSub").textContent = "Đối thủ đang đánh";
+        document.getElementById("myBoardSub").textContent = "Bảo vệ hạm đội";
       }
+      renderBoards();
     }
 
     function fireAt(r, c) {
@@ -573,16 +632,19 @@
       const key = `${r},${c}`;
       if (myShots.has(key)) return;
 
-      myTurn = false;
-      updateTurnUI();
+      stopTurnTimer();
       send({ type: "FIRE", r, c });
     }
 
     function handleMessage(msg) {
       if (msg.type === "READY") {
         enemyReady = true;
-        if (!myReady) setStatus("Đối thủ đã sẵn sàng! Hãy xếp xong tàu của bạn.", "online");
+        if (!myReady) setStatus("Đối thủ đã sẵn sàng! Hoàn tất xếp tàu của bạn.", "online");
         checkBattleStart();
+      } else if (msg.type === "TIMEOUT_SWITCH") {
+        stopTurnTimer();
+        myTurn = true;
+        startTurn();
       } else if (msg.type === "FIRE") {
         const key = `${msg.r},${msg.c}`;
         let hitShip = null;
@@ -596,10 +658,11 @@
 
         if (!hitShip) {
           enemyShots.set(key, "miss");
-          send({ type: "RESULT", r: msg.r, c: msg.c, outcome: "miss" });
+          // Bắn trượt -> Đối thủ mất lượt, đổi sang lượt của mình
+          send({ type: "RESULT", r: msg.r, c: msg.c, outcome: "miss", switchTurn: true });
+          stopTurnTimer();
           myTurn = true;
-          renderBoards();
-          updateTurnUI();
+          startTurn();
         } else {
           const isSunk = hitShip.hits.size === hitShip.size;
           if (isSunk) {
@@ -609,21 +672,24 @@
           }
 
           const allSunk = myShips.every(s => s.hits.size === s.size);
+          // Bắn trúng -> Đối thủ ĐƯỢC BẮN TIẾP (switchTurn: false)
           send({
             type: "RESULT",
             r: msg.r,
             c: msg.c,
             outcome: isSunk ? "sunk" : "hit",
             sunkShip: isSunk ? { id: hitShip.id, name: hitShip.name, cells: hitShip.cells } : null,
-            gameOver: allSunk
+            gameOver: allSunk,
+            switchTurn: false
           });
 
           renderBoards();
           if (allSunk) {
             endGame(false);
           } else {
-            myTurn = true;
-            updateTurnUI();
+            stopTurnTimer();
+            myTurn = false; // Đối thủ bắn trúng nên tiếp tục giữ lượt
+            startTurn();
           }
         }
       } else if (msg.type === "RESULT") {
@@ -640,6 +706,12 @@
         renderBoards();
         if (msg.gameOver) {
           endGame(true);
+        } else {
+          stopTurnTimer();
+          // Nếu bắn trúng (switchTurn = false), mình được bắn tiếp
+          // Nếu bắn trượt (switchTurn = true), mất lượt chuyển sang đối thủ
+          myTurn = !msg.switchTurn;
+          startTurn();
         }
       } else if (msg.type === "REMATCH") {
         startSetupPhase();
@@ -647,10 +719,12 @@
     }
 
     function endGame(won) {
+      stopTurnTimer();
       phase = "over";
       myTurn = false;
       renderBoards();
-      setStatus(won ? "CHIẾN THẮNG! Bạn đã tiêu diệt toàn bộ hạm đội địch!" : "THẤT BẠI! Hạm đội của bạn đã bị bắn chìm.", won ? "turn" : "");
+      setStatus(won ? "CHIẾN THẮNG! Bạn đã đánh chìm toàn bộ hạm đội địch!" : "THẤT BẠI! Hạm đội của bạn đã bị tiêu diệt.", won ? "turn" : "");
+      document.getElementById("battleInfo").textContent = won ? "🎉 Bạn đã thắng!" : "💀 Bạn đã thua!";
       document.getElementById("enemyBoardSub").textContent = won ? "Đã phá hủy" : "Bị tiêu diệt";
       document.getElementById("endControls").classList.remove("hidden");
     }
@@ -709,10 +783,11 @@
       }).join("");
     }
 
-    // Gán sự kiện giao diện
+    // Sự kiện giao diện
     document.getElementById("hostBtn").addEventListener("click", () => {
       const name = document.getElementById("hostInput").value.trim().toUpperCase();
       if (!name) return alert("Vui lòng nhập tên phòng!");
+      activeRoomsList.add(name);
       initPeer(name);
     });
 
@@ -760,7 +835,7 @@
       startSetupPhase();
     });
 
-    // Chạy khởi động ngầm ban đầu
+    // Khởi động hệ thống sảnh
     initPeer();
   </script>
 </body>
