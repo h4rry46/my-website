@@ -2,33 +2,13 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Test 1in8b API (Bảo mật)</title>
+  <title>Nhúng trang web</title>
   <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
-    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
-    pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+    iframe { width: 100%; height: 100%; border: none; }
   </style>
 </head>
 <body>
-  <h2>Thử nghiệm 1in8b.life API</h2>
-  <button onclick="fetchLife()">Tạo một cuộc đời ngẫu nhiên (Việt Nam)</button>
-  <pre id="result">Nhấn nút ở trên để xem kết quả...</pre>
-
-  <script>
-    const WORKER_URL = 'https://api-1in8b.h4rry46.workers.dev/';
-
-    async function fetchLife() {
-      const resultBox = document.getElementById('result');
-      resultBox.textContent = 'Đang tải dữ liệu...';
-
-      try {
-        const response = await fetch(`${WORKER_URL}?country=VNM&year=2000`);
-        const data = await response.json();
-        resultBox.textContent = JSON.stringify(data, null, 2);
-      } catch (error) {
-        resultBox.textContent = 'Lỗi kết nối: ' + error.message;
-      }
-    }
-  </script>
+  <iframe src="https://1in8b.app/vi/" allowfullscreen></iframe>
 </body>
 </html>
