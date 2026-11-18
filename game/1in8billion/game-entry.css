@@ -1,0 +1,14 @@
+/* Reading-first language stacks. Decorative worlds retain their imagery and palette. */
+:root{--t-ui:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--t-display:var(--t-ui);--serif:var(--t-ui);--sans:var(--t-ui)}
+:root:lang(zh){--t-ui:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif}
+:root:lang(zh-TW){--t-ui:-apple-system,BlinkMacSystemFont,'PingFang TC','Microsoft JhengHei','Noto Sans CJK TC',sans-serif}
+:root:lang(ja){--t-ui:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Yu Gothic',Meiryo,sans-serif}
+:root:lang(ko){--t-ui:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif}
+html[data-design-system] :is(body,button,input,select,textarea){font-family:var(--t-ui)}
+html[data-design-system] .hero-title{font:650 clamp(32px,4vw,56px)/1.22 var(--t-ui)!important;letter-spacing:0!important;max-width:19ch}
+html[data-design-system] :is(h2,h3,.cert-name-main,.cert-age,.story-prose,.birth-current-text){font-family:var(--t-ui);letter-spacing:normal}
+.story-moment p,.story-prose{font-weight:400;line-height:1.85}.theme-hero .hero-sub{font-weight:400!important;line-height:1.8}
+#lifeCert .cert-age-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:baseline}#lifeCert .cert-age{grid-column:1/-1;font:650 32px/1.3 var(--t-ui)}#lifeCert .cert-le{font:400 12px/1.6 var(--t-ui);color:var(--t-muted)}#lifeCert .cert-le-val{font:600 17px/1.5 var(--t-ui);margin:0}#lifeCert .cert-bar-wrap{display:none}
+.reference-details{margin:0 12px 12px;color:var(--t-muted)}.reference-details>summary{cursor:pointer;min-height:32px;min-width:32px;line-height:32px}.reference-details .reference-note{padding:0;font-size:12px;line-height:1.6}
+.play-policy,.story-year-change,.birth-origin-details,.birth-record .muted,.story-dialog small,.task-guide{font-size:13px!important;line-height:1.6!important;color:var(--t-muted)}
+html[data-design-system] .theme-hero .hero-copy .hero-sub{font-weight:400!important}

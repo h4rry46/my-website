@@ -1,0 +1,1218 @@
+[
+  {
+    "lang": "en",
+    "country": "JPN",
+    "seed": "samplejp",
+    "calendarMonth": "2026-10",
+    "name": "伊藤 陽菜",
+    "age": 98,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You explore the textures of leaves and stones."
+      },
+      {
+        "age": 47,
+        "text": "You choose to keep an object for its memories."
+      },
+      {
+        "age": 97,
+        "text": "You make a modest plan to meet again."
+      }
+    ],
+    "outcomeDigest": "f77c77694a5a9c3fba7e10a5e64d70deff448b1824748e73db0e84d173527d8c",
+    "logEntries": 128,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "USA",
+    "seed": "sampleus",
+    "calendarMonth": "2026-10",
+    "name": "Ramos Avery",
+    "age": 68,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You discover a new flavor at mealtime."
+      },
+      {
+        "age": 32,
+        "text": "You feel encouraged by a modest piece of progress."
+      },
+      {
+        "age": 67,
+        "text": "Someone notices an effort you thought went unseen."
+      }
+    ],
+    "outcomeDigest": "51444a36f89ab41804848d95e22682d9fc8d2421fe13c4f84cd2b4f487e4295b",
+    "logEntries": 96,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "IND",
+    "seed": "samplein",
+    "calendarMonth": "2026-10",
+    "name": "Mukesh Maheshwari",
+    "age": 82,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You learn to recognize a familiar melody."
+      },
+      {
+        "age": 39,
+        "text": "You thank someone for an everyday kindness."
+      },
+      {
+        "age": 81,
+        "text": "You take a short break before returning to a task."
+      }
+    ],
+    "outcomeDigest": "657aa17c98e49344891de516ff9d54f59b8540ba662b73f819684a411d575358",
+    "logEntries": 112,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "CHN",
+    "seed": "journeychn",
+    "calendarMonth": "2026-10",
+    "name": "何麗雲",
+    "age": 85,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You listen closely to the sounds outside."
+      },
+      {
+        "age": 40,
+        "text": "You set aside something that has outlived its usefulness."
+      },
+      {
+        "age": 84,
+        "text": "You revisit a familiar place in memory."
+      }
+    ],
+    "outcomeDigest": "bbe67b8f41228950447d1827402b0e72ebdb975b0f84b93425f4c0125a42a980",
+    "logEntries": 113,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "GBR",
+    "seed": "journeygbr",
+    "calendarMonth": "2026-10",
+    "name": "Scott Aaron",
+    "age": 56,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You listen closely to the sounds outside."
+      },
+      {
+        "age": 26,
+        "text": "Started working"
+      },
+      {
+        "age": 55,
+        "text": "You make time for a short walk together."
+      }
+    ],
+    "outcomeDigest": "0ad72c067a7902485d80e837d3f0c9d6feaea347f6f0131bfec687b89dc4c20b",
+    "logEntries": 80,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "FRA",
+    "seed": "journeyfra",
+    "calendarMonth": "2026-10",
+    "name": "Bailey Willow",
+    "age": 93,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You listen closely to the sounds outside."
+      },
+      {
+        "age": 45,
+        "text": "Someone notices an effort you thought went unseen."
+      },
+      {
+        "age": 92,
+        "text": "An old song brings back a particular day."
+      }
+    ],
+    "outcomeDigest": "6e9e17497e4a7bda6f10b47a2049addacb6a4d73111113913d957930419d9ce5",
+    "logEntries": 122,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "CAN",
+    "seed": "journeycan",
+    "calendarMonth": "2026-10",
+    "name": "Reed Lan",
+    "age": 86,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You watch raindrops race down a window."
+      },
+      {
+        "age": 41,
+        "text": "You work through a misunderstanding calmly."
+      },
+      {
+        "age": 85,
+        "text": "You learn to ask for help at home."
+      }
+    ],
+    "outcomeDigest": "1ed33035aba2d00d29e807966cac6e2f841eda6aa502b01bcf35a385a1018d25",
+    "logEntries": 115,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "AUS",
+    "seed": "journeyaus",
+    "calendarMonth": "2026-10",
+    "name": "Walker Hao",
+    "age": 61,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "An ordinary day becomes a memory of growing up."
+      },
+      {
+        "age": 29,
+        "text": "Married Perez Jing"
+      },
+      {
+        "age": 60,
+        "text": "Retired"
+      }
+    ],
+    "outcomeDigest": "bd95325ee3b956ec3de6049630343e557a18869cc99afbc5558b4d42955d4f6e",
+    "logEntries": 86,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "KOR",
+    "seed": "journeykor",
+    "calendarMonth": "2026-10",
+    "name": "이영수",
+    "age": 94,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You explore the textures of leaves and stones."
+      },
+      {
+        "age": 45,
+        "text": "You find reassurance in a familiar place."
+      },
+      {
+        "age": 93,
+        "text": "You thank someone for an everyday kindness."
+      }
+    ],
+    "outcomeDigest": "ba6f9e6c34ac910daa35b0bfbeba2f4e820c0a28e5119534da4cbc2b88b5c0e0",
+    "logEntries": 122,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "NGA",
+    "seed": "journeynga",
+    "calendarMonth": "2026-10",
+    "name": "Castillo Hazel",
+    "age": 2,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You explore the textures of leaves and stones."
+      }
+    ],
+    "outcomeDigest": "a9c56bb828656dc61ed7af2852986683e459983580b3411c0de4593120a58fbf",
+    "logEntries": 3,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "BRA",
+    "seed": "journeybra",
+    "calendarMonth": "2026-10",
+    "name": "Alvarez Nevaeh",
+    "age": 49,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You listen closely to the sounds outside."
+      },
+      {
+        "age": 24,
+        "text": "An invitation to reconnect: Keep my current routine"
+      },
+      {
+        "age": 48,
+        "text": "You recognize the value of reliable everyday work."
+      }
+    ],
+    "outcomeDigest": "6b620dd33e37ee7bc4885b7a0381038bc2761014311c23e3f22fc2fe9181127e",
+    "logEntries": 73,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "en",
+    "country": "CHE",
+    "seed": "journeyche",
+    "calendarMonth": "2026-10",
+    "name": "Peterson Tyler",
+    "age": 88,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "You discover a new flavor at mealtime."
+      },
+      {
+        "age": 42,
+        "text": "You learn a simple recipe."
+      },
+      {
+        "age": 87,
+        "text": "You make peace with a plan that changed."
+      }
+    ],
+    "outcomeDigest": "0f51007bc43b1c80ae11161d6fff948440e89724a25d425617666cc4218b47e5",
+    "logEntries": 118,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "JPN",
+    "seed": "samplejp",
+    "calendarMonth": "2026-10",
+    "name": "伊藤 陽菜",
+    "age": 98,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "葉や石のテクスチャを探索します。"
+      },
+      {
+        "age": 47,
+        "text": "あなたは、思い出のためにオブジェクトを保管することを選択しました。"
+      },
+      {
+        "age": 97,
+        "text": "あなたはまた会うためのささやかな計画を立てます。"
+      }
+    ],
+    "outcomeDigest": "34ee479c9f25b9708bf19294f6ca106bd0075992413b54855ffbe0212ad575df",
+    "logEntries": 128,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "USA",
+    "seed": "sampleus",
+    "calendarMonth": "2026-10",
+    "name": "Ramos Avery",
+    "age": 68,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "食事のときに新しい味を発見します。"
+      },
+      {
+        "age": 32,
+        "text": "あなたはささやかな進歩に勇気づけられたと感じます。"
+      },
+      {
+        "age": 67,
+        "text": "あなたが見過ごされていると思っていた努力に誰かが気づきます。"
+      }
+    ],
+    "outcomeDigest": "159186aa5c554a0dca4172e09dbd0fb2e6b503f561e5ee8164c8f317bdb9b764",
+    "logEntries": 96,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "IND",
+    "seed": "samplein",
+    "calendarMonth": "2026-10",
+    "name": "Mukesh Maheshwari",
+    "age": 82,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "あなたは馴染みのあるメロディーを認識することを学びます。"
+      },
+      {
+        "age": 39,
+        "text": "あなたは誰かに毎日の親切に対して感謝しています。"
+      },
+      {
+        "age": 81,
+        "text": "タスクに戻る前に少し休憩を取ります。"
+      }
+    ],
+    "outcomeDigest": "70b5fc84fb619d12011f899b1a23e5e55136e87a43659103ce672b2eb8f5ba53",
+    "logEntries": 112,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "CHN",
+    "seed": "journeychn",
+    "calendarMonth": "2026-10",
+    "name": "何麗雲",
+    "age": 85,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "あなたは外の音に耳を澄ます。"
+      },
+      {
+        "age": 40,
+        "text": "役に立たなくなったものを脇に置いておきました。"
+      },
+      {
+        "age": 84,
+        "text": "あなたは記憶の中で馴染みのある場所を再訪します。"
+      }
+    ],
+    "outcomeDigest": "a88812ccc33e18e76b561381591fddac3ea8815e8b4607eb716924fa5e47d138",
+    "logEntries": 113,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "GBR",
+    "seed": "journeygbr",
+    "calendarMonth": "2026-10",
+    "name": "Scott Aaron",
+    "age": 56,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "あなたは外の音に耳を澄ます。"
+      },
+      {
+        "age": 26,
+        "text": "就職"
+      },
+      {
+        "age": 55,
+        "text": "あなたは一緒に短い散歩の時間を作ります。"
+      }
+    ],
+    "outcomeDigest": "52a3183edeeaafadfe3144333b9539c09170322121df480e034cdb59cff24e43",
+    "logEntries": 80,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "FRA",
+    "seed": "journeyfra",
+    "calendarMonth": "2026-10",
+    "name": "Bailey Willow",
+    "age": 93,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "あなたは外の音に耳を澄ます。"
+      },
+      {
+        "age": 45,
+        "text": "あなたが見過ごされていると思っていた努力に誰かが気づきます。"
+      },
+      {
+        "age": 92,
+        "text": "古い歌は特定の日を思い出させます。"
+      }
+    ],
+    "outcomeDigest": "1827d0541e54591f2324536fae846f5fe6bd6faf86e33879644c45753710db45",
+    "logEntries": 122,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "CAN",
+    "seed": "journeycan",
+    "calendarMonth": "2026-10",
+    "name": "Reed Lan",
+    "age": 86,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "あなたは雨粒が窓を流れ落ちていくのを見ます。"
+      },
+      {
+        "age": 41,
+        "text": "あなたは冷静に誤解に対処します。"
+      },
+      {
+        "age": 85,
+        "text": "あなたは家で助けを求めることを学びます。"
+      }
+    ],
+    "outcomeDigest": "a9539b43c850514e9a0773fdba6ef1c3087b6441466ebd1bbd9db3a59ec95549",
+    "logEntries": 115,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "AUS",
+    "seed": "journeyaus",
+    "calendarMonth": "2026-10",
+    "name": "Walker Hao",
+    "age": 61,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "平凡な一日が成長の思い出になります。"
+      },
+      {
+        "age": 29,
+        "text": "Perez Jingと結婚"
+      },
+      {
+        "age": 60,
+        "text": "退職"
+      }
+    ],
+    "outcomeDigest": "0fb88b2a53188c77a87ea429a2b5dc8d52f8a883d59e4e05491bc6140ad05eda",
+    "logEntries": 86,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "KOR",
+    "seed": "journeykor",
+    "calendarMonth": "2026-10",
+    "name": "이영수",
+    "age": 94,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "葉や石のテクスチャを探索します。"
+      },
+      {
+        "age": 45,
+        "text": "慣れ親しんだ場所にいると安心感が得られます。"
+      },
+      {
+        "age": 93,
+        "text": "あなたは誰かに毎日の親切に対して感謝しています。"
+      }
+    ],
+    "outcomeDigest": "e9449031348c00341b762efd1ec3943228ab6491a3aefedd40304afb3c4b9ed6",
+    "logEntries": 122,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "NGA",
+    "seed": "journeynga",
+    "calendarMonth": "2026-10",
+    "name": "Castillo Hazel",
+    "age": 2,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "葉や石のテクスチャを探索します。"
+      }
+    ],
+    "outcomeDigest": "31f4715244461ede1fbe681f189d2e2b8d1fd21d03cb8dcacb932de19243f9dc",
+    "logEntries": 3,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "BRA",
+    "seed": "journeybra",
+    "calendarMonth": "2026-10",
+    "name": "Alvarez Nevaeh",
+    "age": 49,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "あなたは外の音に耳を澄ます。"
+      },
+      {
+        "age": 24,
+        "text": "再接続への招待状: 現在のルーチンを維持する"
+      },
+      {
+        "age": 48,
+        "text": "あなたは、信頼できる毎日の仕事の価値を認識しています。"
+      }
+    ],
+    "outcomeDigest": "5fbd0d97174f7eef062fe2490a80004c2c3d017137703e02ed3145609b53e99f",
+    "logEntries": 73,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ja",
+    "country": "CHE",
+    "seed": "journeyche",
+    "calendarMonth": "2026-10",
+    "name": "Peterson Tyler",
+    "age": 88,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "食事のときに新しい味を発見します。"
+      },
+      {
+        "age": 42,
+        "text": "簡単なレシピを学びます。"
+      },
+      {
+        "age": 87,
+        "text": "あなたは変更された計画で和解しました。"
+      }
+    ],
+    "outcomeDigest": "8ac88a05d8ad4f797c13b6a58de9441b7e57d8a5d230d9391b69f1cb845c5fc6",
+    "logEntries": 118,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "JPN",
+    "seed": "samplejp",
+    "calendarMonth": "2026-10",
+    "name": "伊藤 陽菜",
+    "age": 98,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "나뭇잎과 돌의 질감을 탐구합니다."
+      },
+      {
+        "age": 47,
+        "text": "당신은 기억을 위해 물건을 보관하기로 결정했습니다."
+      },
+      {
+        "age": 97,
+        "text": "당신은 다시 만나기 위해 소박한 계획을 세웁니다."
+      }
+    ],
+    "outcomeDigest": "ae0c7a74121cc4a3ef9fd7ef38c05979b46235e311f6c5a2975202ef6b446061",
+    "logEntries": 128,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "USA",
+    "seed": "sampleus",
+    "calendarMonth": "2026-10",
+    "name": "Ramos Avery",
+    "age": 68,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "식사 시간에 새로운 맛을 발견합니다."
+      },
+      {
+        "age": 32,
+        "text": "당신은 약간의 진전에 고무감을 느낍니다."
+      },
+      {
+        "age": 67,
+        "text": "누군가가 당신이 보지 못했다고 생각했던 노력을 알아차렸습니다."
+      }
+    ],
+    "outcomeDigest": "5a68d3cb218d3ff9e64ad3a0ca3df0d1d1c8e3a6059e899ed563c11123796ac7",
+    "logEntries": 96,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "IND",
+    "seed": "samplein",
+    "calendarMonth": "2026-10",
+    "name": "Mukesh Maheshwari",
+    "age": 82,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "당신은 익숙한 멜로디를 인식하는 법을 배웁니다."
+      },
+      {
+        "age": 39,
+        "text": "당신은 매일 친절하게 대해준 누군가에게 감사를 표합니다."
+      },
+      {
+        "age": 81,
+        "text": "작업으로 돌아가기 전에 잠시 휴식을 취합니다."
+      }
+    ],
+    "outcomeDigest": "cf22d5206b0094f47a7b8fb821b4b7b649c26c2d555d536e3b3472521a6e0527",
+    "logEntries": 112,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "CHN",
+    "seed": "journeychn",
+    "calendarMonth": "2026-10",
+    "name": "何麗雲",
+    "age": 85,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "당신은 바깥에서 들려오는 소리에 귀를 기울였습니다."
+      },
+      {
+        "age": 40,
+        "text": "당신은 쓸모가 없어진 것을 제쳐두었습니다."
+      },
+      {
+        "age": 84,
+        "text": "당신은 기억 속의 친숙한 장소를 다시 방문합니다."
+      }
+    ],
+    "outcomeDigest": "b8b37b2a6f4f6ddf7baa3918347f2fe780fa42321f6b720ab9bc98a8ee9d4f25",
+    "logEntries": 113,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "GBR",
+    "seed": "journeygbr",
+    "calendarMonth": "2026-10",
+    "name": "Scott Aaron",
+    "age": 56,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "당신은 바깥에서 들려오는 소리에 귀를 기울였습니다."
+      },
+      {
+        "age": 26,
+        "text": "첫 직장"
+      },
+      {
+        "age": 55,
+        "text": "함께 짧은 산책 시간을 가집니다."
+      }
+    ],
+    "outcomeDigest": "e3ad2481e214055c70035b19f55f4c7491e5f998fa9461cc593de48d67f5af7b",
+    "logEntries": 80,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "FRA",
+    "seed": "journeyfra",
+    "calendarMonth": "2026-10",
+    "name": "Bailey Willow",
+    "age": 93,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "당신은 바깥에서 들려오는 소리에 귀를 기울였습니다."
+      },
+      {
+        "age": 45,
+        "text": "누군가가 당신이 보지 못했다고 생각했던 노력을 알아차렸습니다."
+      },
+      {
+        "age": 92,
+        "text": "오래된 노래가 특정한 날을 회상합니다."
+      }
+    ],
+    "outcomeDigest": "638dd47efc4ebed6eafa3af2bc25f859958d89561890ca8f9d213ff92ca94995",
+    "logEntries": 122,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "CAN",
+    "seed": "journeycan",
+    "calendarMonth": "2026-10",
+    "name": "Reed Lan",
+    "age": 86,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "당신은 빗방울이 창문 아래로 경주하는 것을 봅니다."
+      },
+      {
+        "age": 41,
+        "text": "당신은 침착하게 오해를 풀고 있습니다."
+      },
+      {
+        "age": 85,
+        "text": "집에서 도움을 요청하는 방법을 배웁니다."
+      }
+    ],
+    "outcomeDigest": "8ea6cc8fb589468aa43b464e89aa48593a7706342e5e2dbe004ed2cd47ec960e",
+    "logEntries": 115,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "AUS",
+    "seed": "journeyaus",
+    "calendarMonth": "2026-10",
+    "name": "Walker Hao",
+    "age": 61,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "평범한 하루가 성장의 추억이 됩니다."
+      },
+      {
+        "age": 29,
+        "text": "Perez Jing와 결혼"
+      },
+      {
+        "age": 60,
+        "text": "은퇴"
+      }
+    ],
+    "outcomeDigest": "601a4006a486079f68eb582a6438b15c4e2508755f827568cafeb639a227de50",
+    "logEntries": 86,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "KOR",
+    "seed": "journeykor",
+    "calendarMonth": "2026-10",
+    "name": "이영수",
+    "age": 94,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "나뭇잎과 돌의 질감을 탐구합니다."
+      },
+      {
+        "age": 45,
+        "text": "당신은 익숙한 곳에서 안도감을 느낍니다."
+      },
+      {
+        "age": 93,
+        "text": "당신은 매일 친절하게 대해준 누군가에게 감사를 표합니다."
+      }
+    ],
+    "outcomeDigest": "dddc71a4d23f1fb039a2d94cb97e7851579ee7a456eb43a4783630bc0e7cd546",
+    "logEntries": 122,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "NGA",
+    "seed": "journeynga",
+    "calendarMonth": "2026-10",
+    "name": "Castillo Hazel",
+    "age": 2,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "나뭇잎과 돌의 질감을 탐구합니다."
+      }
+    ],
+    "outcomeDigest": "bacc42d7d069aeb7ceea5f24b96f93136c64c93b72fde2b9d7aff59d89a09a0d",
+    "logEntries": 3,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "BRA",
+    "seed": "journeybra",
+    "calendarMonth": "2026-10",
+    "name": "Alvarez Nevaeh",
+    "age": 49,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "당신은 바깥에서 들려오는 소리에 귀를 기울였습니다."
+      },
+      {
+        "age": 24,
+        "text": "재접속을 위한 초대: 현재 루틴을 유지합니다."
+      },
+      {
+        "age": 48,
+        "text": "당신은 안정적인 일상 업무의 가치를 인식하고 있습니다."
+      }
+    ],
+    "outcomeDigest": "0b76de8374f8b777227d2454cf5f0de1dd6cc6444785bee1be1eb084774dfcf4",
+    "logEntries": 73,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "ko",
+    "country": "CHE",
+    "seed": "journeyche",
+    "calendarMonth": "2026-10",
+    "name": "Peterson Tyler",
+    "age": 88,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "식사 시간에 새로운 맛을 발견합니다."
+      },
+      {
+        "age": 42,
+        "text": "당신은 간단한 조리법을 배웁니다."
+      },
+      {
+        "age": 87,
+        "text": "당신은 변경된 계획에 화해했습니다."
+      }
+    ],
+    "outcomeDigest": "6581ffc0ff8ce10dc7562d0bafca7394e8a91d717ebb1b280a6e59f53a94e9da",
+    "logEntries": 118,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "JPN",
+    "seed": "samplejp",
+    "calendarMonth": "2026-10",
+    "name": "伊藤 陽菜",
+    "age": 98,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你摸摸葉子和石頭，比較它們的觸感。"
+      },
+      {
+        "age": 47,
+        "text": "你因為一段回憶，決定留下某件東西。"
+      },
+      {
+        "age": 97,
+        "text": "你們約定，有空再見一面。"
+      }
+    ],
+    "outcomeDigest": "45ecac08d85061f772340a5655b62900f20292a5feae145cf6df53b6c4903cd1",
+    "logEntries": 128,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "USA",
+    "seed": "sampleus",
+    "calendarMonth": "2026-10",
+    "name": "Ramos Avery",
+    "age": 68,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "吃飯時，你嚐到一種新的味道。"
+      },
+      {
+        "age": 32,
+        "text": "一點不大的進步，也讓你得到鼓勵。"
+      },
+      {
+        "age": 67,
+        "text": "你以為沒人注意的努力，被人看見了。"
+      }
+    ],
+    "outcomeDigest": "be44ed43c51b0e621cdcd12d9becb327eddac95ef14ac47c4d69cbb87f83465f",
+    "logEntries": 96,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "IND",
+    "seed": "samplein",
+    "calendarMonth": "2026-10",
+    "name": "Mukesh Maheshwari",
+    "age": 82,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你漸漸認得一段熟悉的旋律。"
+      },
+      {
+        "age": 39,
+        "text": "你為一份日常的照顧，認真地道了謝。"
+      },
+      {
+        "age": 81,
+        "text": "你先休息了一會兒，再回去繼續做事。"
+      }
+    ],
+    "outcomeDigest": "35cab6232585341b70374c40e706caa1d72309012c357bfeee3547168c571a3a",
+    "logEntries": 112,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "CHN",
+    "seed": "journeychn",
+    "calendarMonth": "2026-10",
+    "name": "何麗雲",
+    "age": 85,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你認真聽著屋外傳來的聲音。"
+      },
+      {
+        "age": 40,
+        "text": "你放下了一件已經不再適用的舊物。"
+      },
+      {
+        "age": 84,
+        "text": "你在回憶中，重新走過一個熟悉的地方。"
+      }
+    ],
+    "outcomeDigest": "d55dfb92e97226c3e9de572e5d33e88564c84ca6769d9a3118732f4dc2e1a80b",
+    "logEntries": 113,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "GBR",
+    "seed": "journeygbr",
+    "calendarMonth": "2026-10",
+    "name": "Scott Aaron",
+    "age": 56,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你認真聽著屋外傳來的聲音。"
+      },
+      {
+        "age": 26,
+        "text": "開始工作"
+      },
+      {
+        "age": 55,
+        "text": "你騰出時間，與朋友一起走了一小段路。"
+      }
+    ],
+    "outcomeDigest": "8816e32a0d8364063e0f469af6d2bbc3d868011b3de2fb8845e1e281e79c8c33",
+    "logEntries": 80,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "FRA",
+    "seed": "journeyfra",
+    "calendarMonth": "2026-10",
+    "name": "Bailey Willow",
+    "age": 93,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你認真聽著屋外傳來的聲音。"
+      },
+      {
+        "age": 45,
+        "text": "你以為沒人注意的努力，被人看見了。"
+      },
+      {
+        "age": 92,
+        "text": "一首老歌，讓某一天重新浮現腦海。"
+      }
+    ],
+    "outcomeDigest": "06dd97ac738e3468ef1c2184db895c98a1f1de9fad9f080ef5e29f63e3822fc3",
+    "logEntries": 122,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "CAN",
+    "seed": "journeycan",
+    "calendarMonth": "2026-10",
+    "name": "Reed Lan",
+    "age": 86,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你看著雨滴沿著窗玻璃追逐。"
+      },
+      {
+        "age": 41,
+        "text": "你試著平靜地解決一次工作中的誤會。"
+      },
+      {
+        "age": 85,
+        "text": "你學習在需要時向家人求助。"
+      }
+    ],
+    "outcomeDigest": "44ab9af37cb6d852b405644a890d77d1781829260755f3572cffeef0b5097340",
+    "logEntries": 115,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "AUS",
+    "seed": "journeyaus",
+    "calendarMonth": "2026-10",
+    "name": "Walker Hao",
+    "age": 61,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "平凡的一天，成了成長中的一段記憶。"
+      },
+      {
+        "age": 29,
+        "text": "與 Perez Jing 結婚"
+      },
+      {
+        "age": 60,
+        "text": "退休"
+      }
+    ],
+    "outcomeDigest": "bc581882bc7a3482aa2848f05400422759843ccc6819bd1a2973d4a826216c51",
+    "logEntries": 86,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "KOR",
+    "seed": "journeykor",
+    "calendarMonth": "2026-10",
+    "name": "이영수",
+    "age": 94,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你摸摸葉子和石頭，比較它們的觸感。"
+      },
+      {
+        "age": 45,
+        "text": "熟悉的地方，給了你一點踏實感。"
+      },
+      {
+        "age": 93,
+        "text": "你為一份日常的照顧，認真地道了謝。"
+      }
+    ],
+    "outcomeDigest": "7ad23b89935d10492f225028a5d819b013ff6c890f54db80e6c69530e01ffc98",
+    "logEntries": 122,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "NGA",
+    "seed": "journeynga",
+    "calendarMonth": "2026-10",
+    "name": "Castillo Hazel",
+    "age": 2,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你摸摸葉子和石頭，比較它們的觸感。"
+      }
+    ],
+    "outcomeDigest": "741709cbe45ae24d6a0838e3bdc29af1bc523f8ae0f089eaa381a3e4d61285ad",
+    "logEntries": 3,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "BRA",
+    "seed": "journeybra",
+    "calendarMonth": "2026-10",
+    "name": "Alvarez Nevaeh",
+    "age": 49,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "你認真聽著屋外傳來的聲音。"
+      },
+      {
+        "age": 24,
+        "text": "一次重新聯繫的機會: 維持目前的日常安排"
+      },
+      {
+        "age": 48,
+        "text": "你越來越懂得，穩定完成日常工作的價值。"
+      }
+    ],
+    "outcomeDigest": "f20bafbd76b2064044dffc5b9c9a06de861e11050f5f3ee03e7e194c225fd7a5",
+    "logEntries": 73,
+    "rulesVersion": 3
+  },
+  {
+    "lang": "zh-TW",
+    "country": "CHE",
+    "seed": "journeyche",
+    "calendarMonth": "2026-10",
+    "name": "Peterson Tyler",
+    "age": 88,
+    "died": true,
+    "moments": [
+      {
+        "age": 1,
+        "text": "吃飯時，你嚐到一種新的味道。"
+      },
+      {
+        "age": 42,
+        "text": "你學會做一道簡單的食物。"
+      },
+      {
+        "age": 87,
+        "text": "對於一個後來改變的計劃，你漸漸釋然。"
+      }
+    ],
+    "outcomeDigest": "ce5e5465009f7c96e2003c98b5c2852b5169550b2a467599b26109b9ce1783e5",
+    "logEntries": 118,
+    "rulesVersion": 3
+  }
+]
