@@ -1,452 +1,387 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>h4rry46 — Hub &amp; Portal</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='16' fill='%23181920'/><rect x='2' y='2' width='60' height='60' rx='14' fill='none' stroke='%233b82f6' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui,sans-serif' font-weight='700' font-size='32' fill='%233b82f6'>h4</text></svg>" />
-<meta name="description" content="Central hub for Đoàn Đức Hạnh (h4rry46) — linking to Bio, Immich Photos, and upcoming projects." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<style>
-  :root {
-    --background: oklch(0.99 0 0);
-    --foreground: oklch(0.15 0 0);
-    --card: oklch(0.98 0.005 240);
-    --secondary: oklch(0.96 0.01 240);
-    --muted-foreground: oklch(0.45 0.01 240);
-    --accent: oklch(0.55 0.22 240);
-    --accent-foreground: oklch(0.99 0 0);
-    --border: oklch(0.9 0.01 240);
-  }
-  .dark {
-    --background: oklch(0.12 0.01 264);
-    --foreground: oklch(0.95 0 0);
-    --card: oklch(0.15 0.01 264);
-    --secondary: oklch(0.2 0.01 264);
-    --muted-foreground: oklch(0.6 0 0);
-    --accent: oklch(0.65 0.2 240);
-    --accent-foreground: oklch(0.95 0 0);
-    --border: oklch(0.22 0.01 264);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { color-scheme: dark; }
-  html:not(.dark) { color-scheme: light; }
-  body {
-    font-family: 'Poppins', system-ui, sans-serif;
-    background: var(--background);
-    color: var(--foreground);
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.5;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: background-color .3s, color .3s;
-    position: relative;
-    overflow-x: hidden;
-  }
-  body::before {
-    content: '';
-    position: fixed;
-    top: -15%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 680px;
-    height: 380px;
-    background: radial-gradient(circle, color-mix(in oklch, var(--accent) 16%, transparent) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-  img { display: block; max-width: 100%; }
-  a { color: inherit; text-decoration: none; }
-  button { font: inherit; color: inherit; cursor: pointer; background: none; border: none; }
-  svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-  .theme-toggle {
-    position: fixed; top: 20px; right: 20px; z-index: 50;
-    width: 48px; height: 48px; border-radius: 12px;
-    background: var(--card); border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent); box-shadow: 0 10px 15px -3px rgb(0 0 0 / .2);
-    transition: background-color .2s, color .2s;
-  }
-  .theme-toggle:hover { background: var(--accent); color: var(--accent-foreground); }
-
-  .hub {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 58rem;
-    margin: 0 auto;
-    padding: 48px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 36px;
-  }
-
-  .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 36rem;
-  }
-  .avatar {
-    position: relative;
-    width: 112px;
-    height: 112px;
-    margin-bottom: 20px;
-  }
-  .avatar-glow {
-    position: absolute;
-    inset: -3px;
-    border-radius: 28px;
-    background: linear-gradient(135deg, var(--accent), color-mix(in oklch, var(--accent) 20%, transparent), transparent);
-    animation: pulse-slow 3s ease-in-out infinite;
-  }
-  .avatar-img {
-    position: absolute;
-    inset: 2px;
-    border-radius: 25px;
-    background: var(--secondary);
-    overflow: hidden;
-  }
-  .avatar-img img { width: 100%; height: 100%; object-fit: cover; }
-  .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: .75rem;
-    font-weight: 500;
-    color: var(--accent);
-    background: color-mix(in oklch, var(--accent) 12%, transparent);
-    border: 1px solid color-mix(in oklch, var(--accent) 25%, transparent);
-    padding: 4px 14px;
-    border-radius: 999px;
-    margin-bottom: 12px;
-  }
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-  }
-  .hero h1 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 8px;
-  }
-  .hero p {
-    font-size: .9375rem;
-    color: var(--muted-foreground);
-  }
-
-  .portal-grid {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  .portal-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 28px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
-    overflow: hidden;
-  }
-  .portal-card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, color-mix(in oklch, var(--accent) 8%, transparent), transparent 60%);
-    opacity: 0;
-    transition: opacity .25s ease;
-    pointer-events: none;
-  }
-  .portal-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 20px 30px -10px color-mix(in oklch, var(--accent) 18%, transparent);
-  }
-  .portal-card:hover::after { opacity: 1; }
-  .portal-card.coming-soon {
-    opacity: .72;
-    cursor: default;
-  }
-  .portal-card.coming-soon:hover {
-    transform: none;
-    border-color: var(--border);
-    box-shadow: none;
-  }
-  .portal-card.coming-soon:hover::after { opacity: 0; }
-
-  .card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-  .card-icon {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
-    background: var(--secondary);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent);
-    transition: background-color .25s, color .25s;
-  }
-  .portal-card:not(.coming-soon):hover .card-icon {
-    background: var(--accent);
-    color: var(--accent-foreground);
-  }
-  .card-icon svg.icon { width: 24px; height: 24px; }
-  .domain-tag {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: .8125rem;
-    font-weight: 600;
-    color: var(--accent);
-    background: color-mix(in oklch, var(--accent) 10%, transparent);
-    padding: 5px 12px;
-    border-radius: 8px;
-    border: 1px solid color-mix(in oklch, var(--accent) 20%, transparent);
-  }
-  .card-body h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .host-badge {
-    font-size: .7rem;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: var(--secondary);
-    border: 1px solid var(--border);
-    color: var(--muted-foreground);
-  }
-  .card-body p {
-    font-size: .875rem;
-    color: var(--muted-foreground);
-    line-height: 1.6;
-  }
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-    font-size: .875rem;
-    font-weight: 500;
-    color: var(--accent);
-  }
-  .portal-card.coming-soon .card-footer {
-    color: var(--muted-foreground);
-  }
-  .card-footer svg.icon {
-    width: 18px;
-    height: 18px;
-    transition: transform .2s ease;
-  }
-  .portal-card:not(.coming-soon):hover .card-footer svg.icon {
-    transform: translate(3px, -3px);
-  }
-
-  .socials {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-  }
-  .socials a {
-    width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color .2s, color .2s, border-color .2s;
-  }
-  .socials a:hover {
-    background: var(--accent);
-    color: var(--accent-foreground);
-    border-color: var(--accent);
-  }
-  footer.hub-footer {
-    text-align: center;
-    font-size: .8125rem;
-    color: var(--muted-foreground);
-  }
-
-  @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
-  @media (prefers-reduced-motion: reduce) {
-    .avatar-glow { animation: none; }
-    *, *::before, *::after { transition-duration: 0s !important; }
-  }
-  @media (min-width: 768px) {
-    .hero h1 { font-size: 2.25rem; }
-    .portal-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
-    .portal-card.span-full { grid-column: 1 / -1; }
-  }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090909">
+  <meta name="description" content="A collection of games and interactive experiments by h4ry46.">
+  <title>Games — h4ry46</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090909;
+      --surface: #141414;
+      --surface-hover: #1b1b1b;
+      --border: #292929;
+      --text: #f5f5f5;
+      --muted: #929292;
+      --soft: #c9c9c9;
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--bg); }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 50% -18%, rgba(255,255,255,.075), transparent 48%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    .page {
+      width: min(820px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 76px 0 38px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 54px;
+    }
+    .brand {
+      color: var(--muted);
+      font-size: .82rem;
+      letter-spacing: .04em;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--soft);
+      font-size: .84rem;
+      transition: color .2s ease;
+    }
+    .back:hover { color: #fff; }
+    .hero { margin-bottom: 34px; }
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 650;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 8vw, 4.2rem);
+      line-height: 1;
+      letter-spacing: -.065em;
+      font-weight: 750;
+    }
+    .intro {
+      max-width: 510px;
+      margin: 17px 0 0;
+      color: var(--muted);
+      font-size: .96rem;
+      line-height: 1.7;
+    }
+    .list-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 13px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .76rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    #gameCount { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+    .games { display: flex; flex-direction: column; gap: 12px; }
+    .game {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr) 34px;
+      align-items: center;
+      gap: 18px;
+      min-height: 112px;
+      padding: 17px 19px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: linear-gradient(110deg, #171717, #111);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .game:hover {
+      transform: translateY(-2px);
+      border-color: #555;
+      background: var(--surface-hover);
+    }
+    .game-icon {
+      display: grid;
+      width: 76px;
+      height: 76px;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid #303030;
+      border-radius: 11px;
+      background: #202020;
+      color: #f2f2f2;
+    }
+    .game-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .game-icon svg { width: 29px; height: 29px; opacity: .8; }
+    .game-info { min-width: 0; }
+    .game-name {
+      margin: 0 0 6px;
+      overflow-wrap: anywhere;
+      font-size: 1.05rem;
+      font-weight: 680;
+      letter-spacing: -.015em;
+    }
+    .game-description {
+      margin: 0;
+      color: var(--muted);
+      font-size: .84rem;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+    .open-mark {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border: 1px solid #303030;
+      border-radius: 9px;
+      color: var(--soft);
+      transition: color .2s ease, background .2s ease, border-color .2s ease;
+    }
+    .game:hover .open-mark { color: #090909; background: #fff; border-color: #fff; }
+    .open-mark svg { width: 15px; height: 15px; }
+    .state {
+      padding: 34px 20px;
+      border: 1px dashed #303030;
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .88rem;
+      line-height: 1.6;
+    }
+    .state strong { display: block; margin-bottom: 5px; color: var(--soft); font-weight: 600; }
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 44px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      color: #666;
+      font-size: .75rem;
+    }
+    @media (max-width: 520px) {
+      .page { width: min(100% - 28px, 820px); padding-top: 38px; }
+      .topbar { margin-bottom: 43px; }
+      .game { grid-template-columns: 60px minmax(0, 1fr) 30px; gap: 13px; padding: 13px; min-height: 88px; }
+      .game-icon { width: 60px; height: 60px; border-radius: 9px; }
+      .game-name { font-size: .98rem; }
+      .game-description { font-size: .79rem; }
+      footer { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0s !important; scroll-behavior: auto !important; }
+    }
+  </style>
 </head>
 <body>
-<button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme"></button>
+  <main class="page">
+    <nav class="topbar" aria-label="Navigation">
+      <a class="brand" href="../">h4ry46 / MAINPAGE</a>
+      <a class="back" href="../">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/><path d="M20 12H9"/></svg>
+        Back to hub
+      </a>
+    </nav>
 
-<main class="hub">
-  <header class="hero">
-    <div class="avatar">
-      <div class="avatar-glow"></div>
-      <div class="avatar-img"><img src="data:image/webp;base64,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" alt="Đoàn Đức Hạnh (h4rry46)" /></div>
-    </div>
-    <div class="status-pill"><span class="status-dot"></span>@h4rry46 &bull; Personal Network</div>
-    <h1>Đoàn Đức Hạnh</h1>
-    <p>Young Developer from Vietnam. Choose a destination below to explore my bio, self-hosted photo gallery, and projects.</p>
-  </header>
+    <header class="hero">
+      <p class="eyebrow">Personal arcade</p>
+      <h1>Games<span style="color:#777">.</span></h1>
+      <p class="intro">A collection of games and small interactive experiments. Pick one and have fun.</p>
+    </header>
 
-  <section class="portal-grid" aria-label="Destinations" id="portalGrid"></section>
-
-  <nav class="socials" aria-label="Social Links" id="socials"></nav>
-
-  <footer class="hub-footer">
-    &copy; 2026 Đoàn Đức Hạnh (h4rry46). All rights reserved.
-  </footer>
-</main>
-
-<script>
-const ICONS = {
-  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
-  camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
-  folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
-  gamepad: '<path d="M6 11h4m-2-2v4m7-1h.01M18 10h.01"/><path d="M7 6h10a4 4 0 0 1 3.9 3.1l1 5A3 3 0 0 1 19 17.7l-3-2.2H8l-3 2.2a3 3 0 0 1-4.9-2.6l1-5A4 4 0 0 1 5 6Z"/>',
-  arrowUpRight: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
-  github: '<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>',
-  facebook: '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
-  discord: '<path d="M9 12a1 1 0 1 0 2 0 1 1 0 0 0-2 0Zm5 0a1 1 0 1 0 2 0 1 1 0 0 0-2 0Z"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5 0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913 0 0 0-4.053 0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5 0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/>',
-  mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
-  moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
-};
-const icon = (name) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
-
-const BASE_DOMAIN = 'h4rry46.id.vn';
-const DESTINATIONS = [
-  {
-    routeLabel: `${BASE_DOMAIN}/bio`,
-    url: './bio/',
-    newTab: false,
-    icon: 'user',
-    title: 'Bio & Portfolio',
-    badge: 'Always Online',
-    description: 'About me, education, IELTS 6.5 certification, technical skills, and contact details.',
-    cta: 'Open Bio',
-    active: true,
-  },
-  {
-    routeLabel: `photo.${BASE_DOMAIN}`,
-    url: `https://photo.${BASE_DOMAIN}`,
-    newTab: true,
-    icon: 'camera',
-    title: 'Photo Gallery (Immich)',
-    badge: 'Home Server',
-    description: 'Self-hosted Immich photo library running on my home machine (available when host PC is online).',
-    cta: 'Open Immich',
-    active: true,
-  },
-  {
-    routeLabel: `${BASE_DOMAIN}/games`,
-    url: './games/',
-    newTab: false,
-    icon: 'gamepad',
-    title: 'Games',
-    badge: '',
-    description: 'A collection of games and interactive experiments.',
-    cta: 'Open Games',
-    active: true,
-  },
-  {
-    routeLabel: `${BASE_DOMAIN}/projects`,
-    url: '#',
-    newTab: false,
-    icon: 'folder',
-    title: 'Projects & Lab',
-    badge: '',
-    description: 'Discord bots, Python automation tools, and self-hosted experiments.',
-    cta: 'Coming Soon',
-    active: false,
-    spanFull: true,
-  },
-];
-
-const SOCIALS = [
-  { name: 'GitHub', url: 'https://github.com/h4rry46', icon: 'github' },
-  { name: 'Facebook', url: 'https://facebook.com/h4rry46', icon: 'facebook' },
-  { name: 'Discord (@h4rry46)', url: 'https://discord.com/users/h4rry46', icon: 'discord' },
-  { name: 'Email', url: 'mailto:h4rry46@gmail.com', icon: 'mail' },
-];
-
-document.getElementById('portalGrid').innerHTML = DESTINATIONS.map((item) => {
-  const tag = item.active ? 'a' : 'div';
-  const targetAttr = item.newTab ? ' target="_blank" rel="noopener noreferrer"' : '';
-  const attrs = item.active
-    ? `href="${item.url}"${targetAttr} class="portal-card${item.spanFull ? ' span-full' : ''}"`
-    : `class="portal-card coming-soon${item.spanFull ? ' span-full' : ''}" aria-disabled="true"`;
-  return `
-    <${tag} ${attrs}>
-      <div>
-        <div class="card-top">
-          <div class="card-icon">${icon(item.icon)}</div>
-          <span class="domain-tag">${item.routeLabel}</span>
-        </div>
-        <div class="card-body" style="margin-top: 20px;">
-          <h2>${item.title}${item.badge ? `<span class="host-badge">${item.badge}</span>` : ''}</h2>
-          <p>${item.description}</p>
-        </div>
+    <section aria-label="Game library">
+      <div class="list-heading">
+        <span>Library</span>
+        <span id="gameCount">Loading…</span>
       </div>
-      <div class="card-footer">
-        <span>${item.cta}</span>
-        ${item.active ? icon('arrowUpRight') : ''}
+      <div class="games" id="games">
+        <div class="state">Looking for games…</div>
       </div>
-    </${tag}>`;
-}).join('');
+    </section>
 
-document.getElementById('socials').innerHTML = SOCIALS.map((s) => `
-  <a href="${s.url}" target="_blank" rel="noopener noreferrer" aria-label="${s.name}" title="${s.name}">
-    ${icon(s.icon)}
-  </a>`).join('');
+    <footer>
+      <span>© <span id="year"></span> h4ry46</span>
+      <span>Built for the web.</span>
+    </footer>
+  </main>
 
-const toggle = document.getElementById('themeToggle');
-let theme = 'dark';
-try { theme = localStorage.getItem('theme') || 'dark'; } catch {}
-const applyTheme = () => {
-  document.documentElement.classList.toggle('dark', theme === 'dark');
-  toggle.innerHTML = icon(theme === 'dark' ? 'sun' : 'moon');
-};
-applyTheme();
-toggle.addEventListener('click', () => {
-  theme = theme === 'dark' ? 'light' : 'dark';
-  applyTheme();
-  try { localStorage.setItem('theme', theme); } catch {}
-});
-</script>
+  <script>
+    // Update these only if the repository or branch changes.
+    const OWNER = "h4ry46";
+    const REPO = "mainpage";
+    const BRANCH = "main";
+    const ROOT = "games";
+
+    const list = document.getElementById("games");
+    const count = document.getElementById("gameCount");
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const fallbackIcon = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 11h4m-2-2v4m7-2h.01m3-.01h.01"/>
+        <path d="M7 6h10a4 4 0 0 1 3.9 3.1l1 5A3 3 0 0 1 19 17.7l-3-2.2H8l-3 2.2a3 3 0 0 1-4.9-2.6l1-5A4 4 0 0 1 5 6Z"/>
+      </svg>`;
+
+    function showState(title, detail) {
+      list.replaceChildren();
+      const box = document.createElement("div");
+      box.className = "state";
+      const strong = document.createElement("strong");
+      strong.textContent = title;
+      const message = document.createElement("span");
+      message.textContent = detail;
+      box.append(strong, message);
+      list.append(box);
+    }
+
+    function prettify(folder) {
+      return folder
+        .replace(/[-_]+/g, " ")
+        .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function safeRelativePath(folder, path) {
+      if (typeof path !== "string" || !path.trim()) return null;
+      // Icons must stay inside their own game folder.
+      const clean = path.trim().replace(/^\.\/+/, "");
+      if (clean.startsWith("/") || clean.split("/").some(part => part === "..")) return null;
+      return `/${ROOT}/${encodeURIComponent(folder)}/${clean.split("/").map(encodeURIComponent).join("/")}`;
+    }
+
+    function createCard(folder, metadata, files) {
+      const name = typeof metadata.name === "string" && metadata.name.trim()
+        ? metadata.name.trim() : prettify(folder);
+      const description = typeof metadata.description === "string" && metadata.description.trim()
+        ? metadata.description.trim() : "An interactive game. Open to play.";
+
+      const card = document.createElement("a");
+      card.className = "game";
+      card.href = `./${encodeURIComponent(folder)}/`;
+      card.setAttribute("aria-label", `Play ${name}`);
+
+      const iconBox = document.createElement("div");
+      iconBox.className = "game-icon";
+
+      let iconPath = safeRelativePath(folder, metadata.icon);
+      if (!iconPath) {
+        const iconFile = files.find(file => /^icon\.(png|jpe?g|webp|gif|svg)$/i.test(file.name));
+        if (iconFile) iconPath = `/${ROOT}/${encodeURIComponent(folder)}/${encodeURIComponent(iconFile.name)}`;
+      }
+
+      if (iconPath) {
+        const img = document.createElement("img");
+        img.src = iconPath;
+        img.alt = "";
+        img.loading = "lazy";
+        img.onerror = () => { iconBox.innerHTML = fallbackIcon; };
+        iconBox.append(img);
+      } else {
+        iconBox.innerHTML = fallbackIcon;
+      }
+
+      const info = document.createElement("div");
+      info.className = "game-info";
+      const title = document.createElement("h2");
+      title.className = "game-name";
+      title.textContent = name;
+      const desc = document.createElement("p");
+      desc.className = "game-description";
+      desc.textContent = description;
+      info.append(title, desc);
+
+      const mark = document.createElement("span");
+      mark.className = "open-mark";
+      mark.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>';
+
+      card.append(iconBox, info, mark);
+      return card;
+    }
+
+    async function loadGames() {
+      const api = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+      try {
+        const response = await fetch(api, {
+          headers: { "Accept": "application/vnd.github+json" }
+        });
+        if (!response.ok) {
+          if (response.status === 403 || response.status === 429) {
+            throw new Error("GitHub API rate limit reached. Please try again later.");
+          }
+          if (response.status === 404) throw new Error("Repository, branch, or games directory was not found.");
+          throw new Error(`GitHub API returned HTTP ${response.status}.`);
+        }
+
+        const data = await response.json();
+        if (data.truncated) throw new Error("The repository is too large for a complete automatic scan.");
+
+        const files = Array.isArray(data.tree) ? data.tree : [];
+        const prefix = `${ROOT}/`;
+        const gameFolders = [...new Set(
+          files
+            .filter(item => item.type === "blob" && item.path.startsWith(prefix))
+            .map(item => item.path.slice(prefix.length).split("/")[0])
+            .filter(folder => folder && !folder.includes("."))
+        )];
+
+        const games = gameFolders
+          .filter(folder => files.some(item => item.type === "blob" && item.path === `${ROOT}/${folder}/index.html`))
+          .map(folder => ({
+            folder,
+            files: files
+              .filter(item => item.type === "blob" && item.path.startsWith(`${ROOT}/${folder}/`))
+              .map(item => ({ name: item.path.slice(`${ROOT}/${folder}/`.length) }))
+          }));
+
+        if (!games.length) {
+          count.textContent = "0 games";
+          showState("No games yet", "Add a subfolder inside /games with an index.html file.");
+          return;
+        }
+
+        const results = await Promise.all(games.map(async game => {
+          const metadataFile = game.files.find(file => file.name === "game.json");
+          if (!metadataFile) return { ...game, metadata: {} };
+
+          const rawUrl = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${ROOT}/${encodeURIComponent(game.folder)}/game.json`;
+          try {
+            const metadataResponse = await fetch(rawUrl);
+            if (!metadataResponse.ok) return { ...game, metadata: {} };
+            const metadata = await metadataResponse.json();
+            return { ...game, metadata: metadata && typeof metadata === "object" ? metadata : {} };
+          } catch {
+            return { ...game, metadata: {} };
+          }
+        }));
+
+        results.sort((a, b) => {
+          const aName = (a.metadata.name || prettify(a.folder)).toString();
+          const bName = (b.metadata.name || prettify(b.folder)).toString();
+          return aName.localeCompare(bName);
+        });
+
+        list.replaceChildren(...results.map(game => createCard(game.folder, game.metadata, game.files)));
+        count.textContent = `${results.length} ${results.length === 1 ? "game" : "games"}`;
+      } catch (error) {
+        count.textContent = "Unavailable";
+        showState("Couldn't load the library", error.message || "Please refresh the page and try again.");
+      }
+    }
+
+    loadGames();
+  </script>
 </body>
 </html>
