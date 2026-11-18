@@ -1,861 +1,722 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Battleship Multiplayer — h4ry46</title>
-  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean Warfare P2P - Trận chiến tàu ngầm</title>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #06101e;
-      --surface: rgba(13, 27, 48, 0.9);
-      --surface-2: rgba(22, 42, 74, 0.95);
-      --border: rgba(59, 130, 246, 0.3);
-      --text: #f0f6fc;
-      --muted: #8b949e;
-      --accent: #3b82f6;
-      --accent-hover: #2563eb;
-      --hit: #ef4444;
-      --miss: #64748b;
-      --ship: #38bdf8;
-      --sunk: #991b1b;
+      --primary-color: #1a4d6d;
+      --secondary-color: #2d5f7a;
+      --bg-color: #0b192c;
+      --board-bg: #1e3e62;
+      --cell-bg: #00000033;
+      --text-color: #ffffff;
+      --accent-color: #ff4500;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
       min-height: 100vh;
-      background: 
-        radial-gradient(circle at 50% 20%, rgba(14, 165, 233, 0.15), transparent 60%),
-        linear-gradient(180deg, #020617 0%, #0f172a 50%, #030712 100%);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
-      -webkit-font-smoothing: antialiased;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px 40px;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
       position: relative;
-      overflow-x: hidden;
+      width: 100%;
+      max-width: 800px;
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      bottom: 0; left: 0; width: 200%; height: 120px;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,0 C150,90 350,-40 500,40 C650,120 900,10 1200,30 L1200,120 L0,120 Z" fill="rgba(30, 58, 138, 0.12)"/></svg>') repeat-x;
-      background-size: 600px 120px;
-      animation: waveMove 18s linear infinite;
-      pointer-events: none;
-      z-index: 0;
-    }
-    @keyframes waveMove {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+    .back-btn {
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #7f8c8d;
+      text-decoration: none;
+      font-weight: bold;
     }
 
-    div, section, header, nav { position: relative; z-index: 1; }
-
-    a { color: inherit; text-decoration: none; }
-    button {
-      font: inherit; color: inherit; cursor: pointer;
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-      border-radius: 10px;
-      padding: 10px 18px;
-      font-size: .875rem; font-weight: 600;
-      backdrop-filter: blur(8px);
-      transition: background .18s, border-color .18s, transform .1s;
-    }
-    button:hover:not(:disabled) { border-color: var(--accent); background: rgba(59, 130, 246, 0.2); }
-    button:active:not(:disabled) { transform: scale(.98); }
-    button:disabled { opacity: .4; cursor: not-allowed; }
-    button.primary {
-      background: var(--accent); border-color: var(--accent); color: #fff;
-    }
-    button.primary:hover:not(:disabled) { background: var(--accent-hover); }
-
-    .topbar {
-      width: min(960px, 100%);
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px; font-size: .85rem; color: var(--muted);
-    }
-    .back:hover { color: #fff; }
-
-    .header { text-align: center; margin-bottom: 20px; }
-    h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; letter-spacing: -.03em; }
-    
-    .status-bar {
-      margin-top: 10px; display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 16px; border-radius: 999px;
-      background: var(--surface); border: 1px solid var(--border);
-      font-size: .84rem; color: #cbd5e1; backdrop-filter: blur(10px);
-    }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #eab308; }
-    .dot.online { background: #22c55e; }
-    .dot.turn { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-
-    .card {
-      width: min(480px, 100%);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 28px;
-      display: flex; flex-direction: column; gap: 20px;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-    }
-    .card h2 { font-size: 1.1rem; font-weight: 700; color: #e2e8f0; }
-    .card p { font-size: .85rem; color: var(--muted); line-height: 1.5; }
-    
-    .row { display: flex; gap: 10px; }
-    input[type="text"] {
-      flex: 1; background: rgba(3, 7, 18, 0.6);
-      border: 1px solid var(--border); border-radius: 10px;
-      padding: 10px 14px; color: var(--text);
-      font-family: ui-monospace, monospace; font-size: 1rem;
-      text-transform: uppercase; letter-spacing: .1em; outline: none;
-    }
-    input[type="text"]:focus { border-color: var(--accent); }
-
-    .room-display {
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(3, 7, 18, 0.5); border: 1px dashed rgba(59, 130, 246, 0.4);
-      border-radius: 10px; padding: 12px 14px;
-    }
-    .room-code {
-      font-family: ui-monospace, monospace; font-size: 1.25rem;
-      font-weight: 700; letter-spacing: .15em; color: var(--ship);
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 5px;
+      color: #4a90b8;
     }
 
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .1em;
+    .subtitle {
+      color: #95a5a6;
+      font-size: 0.9rem;
     }
-    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
-    .arena { width: min(960px, 100%); display: none; flex-direction: column; gap: 20px; }
-    .arena.active { display: flex; }
+    .status-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
 
-    .battle-hud {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; padding: 12px 20px; backdrop-filter: blur(10px);
-    }
-    .timer-badge {
-      display: flex; align-items: center; gap: 8px;
-      font-family: ui-monospace, monospace; font-size: 1.1rem; font-weight: 700;
-      color: #38bdf8;
-    }
-    .timer-badge.warning { color: #ef4444; animation: pulseTimer 1s infinite; }
-    @keyframes pulseTimer { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-
-    .boards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 24px; justify-items: center;
-    }
-    .board-wrap {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 18px; padding: 18px; width: 100%; max-width: 400px;
-      backdrop-filter: blur(12px); box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-    }
-    .board-title {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px; font-size: .9rem; font-weight: 650;
-    }
-    .board-title span.sub { font-size: .78rem; color: var(--muted); font-weight: 500; }
-
-    .grid {
-      display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px;
-      width: 100%; aspect-ratio: 1 / 1; user-select: none;
-    }
-    .cell {
-      background: rgba(3, 7, 18, 0.6);
-      border: 1px solid rgba(59, 130, 246, 0.15);
-      border-radius: 5px; display: grid; place-items: center;
-      font-size: .7rem; font-weight: 700;
-      aspect-ratio: 1 / 1;
-      position: relative;
-      transition: background .12s, border-color .12s;
-    }
-    .cell.clickable { cursor: pointer; }
-    .cell.clickable:hover { border-color: var(--accent); background: rgba(59, 130, 246, 0.25); }
-    .cell.preview { background: rgba(59, 130, 246, 0.35); border-color: var(--accent); }
-    .cell.preview-invalid { background: rgba(239, 68, 68, 0.35); border-color: var(--hit); }
-    
-    /* Hình ảnh thiết kế tàu chiến trực quan có phân biệt Mũi tàu (Bow) */
-    .cell.ship { 
-      background: rgba(56, 189, 248, 0.22); 
-      border-color: var(--ship); 
-    }
-    .cell.ship::before {
-      content: "";
-      width: 65%; height: 65%;
-      border-radius: 4px;
-      background: rgba(56, 189, 248, 0.7);
-    }
-    /* Mũi tàu (Ô đầu tiên của tàu) có hình dáng nhọn/đặc biệt hơn */
-    .cell.ship.bow::before {
-      border-radius: 50% 50% 4px 4px;
-      background: #38bdf8;
-      box-shadow: 0 0 6px #38bdf8;
-    }
-    /* Đồ họa Tàu ngầm (Submarine) */
-    .cell.ship.sub-icon::before {
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
       border-radius: 50%;
-      width: 52%; height: 52%;
-      background: #0ea5e9;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
     }
 
-    .cell.miss { background: #090d16; border-color: #1e293b; }
-    .cell.miss::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--miss); }
-    .cell.hit { background: rgba(239, 68, 68, 0.25); border-color: var(--hit); color: var(--hit); }
-    .cell.hit::after { content: "✕"; }
-    .cell.sunk { background: var(--sunk); border-color: var(--hit); color: #fff; }
-    .cell.sunk::after { content: "✕"; }
-
-    .ship-list { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
-    .ship-tag {
-      font-size: .72rem; padding: 4px 8px; border-radius: 6px;
-      background: rgba(3, 7, 18, 0.4); border: 1px solid var(--border); color: var(--muted);
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
-    .ship-tag.active { border-color: var(--accent); color: var(--text); }
-    .ship-tag.placed { text-decoration: line-through; opacity: .4; }
-    .ship-tag.destroyed { border-color: var(--hit); color: var(--hit); text-decoration: line-through; }
 
-    .hidden { display: none !important; }
+    .screen {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .screen.hidden {
+      display: none;
+    }
+
+    /* Lobby styles */
+    .lobby-container {
+      background: var(--secondary-color);
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    .lobby-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .btn-refresh {
+      background: #4a90b8;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-refresh:hover {
+      background: #357294;
+    }
+
+    .lobby-info {
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+    }
+
+    .players-list {
+      background: var(--bg-color);
+      border-radius: 8px;
+      padding: 15px;
+      min-height: 150px;
+      max-height: 250px;
+      overflow-y: auto;
+      margin-bottom: 15px;
+    }
+
+    .player-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.05);
+      margin-bottom: 8px;
+      border-radius: 6px;
+    }
+
+    .player-item button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .player-item button:hover {
+      background: #219653;
+    }
+
+    .lobby-footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #bdc3c7;
+    }
+
+    /* Controls & Setup */
+    .setup-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      background: #34495e;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+
+    .btn:hover { background: #2c3e50; }
+    .btn-success { background: #27ae60; }
+    .btn-success:hover { background: #219653; }
+    .btn-danger { background: #c0392b; }
+    .btn-danger:hover { background: #a93226; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .fleet-info {
+      margin-bottom: 15px;
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .ships-list {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .ship-item {
+      font-size: 0.85rem;
+      background: rgba(0,0,0,0.2);
+      padding: 5px 8px;
+      border-radius: 4px;
+    }
+
+    /* Boards */
+    .board-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .boards-wrapper {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .board-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(10, 35px);
+      grid-template-rows: repeat(10, 35px);
+      gap: 2px;
+      background-color: var(--board-bg);
+      padding: 4px;
+      border-radius: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    .cell {
+      background-color: var(--cell-bg);
+      border-radius: 2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background-color 0.2s;
+    }
+
+    .cell:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Cell states */
+    .cell.ship {
+      background-color: #2980b9;
+    }
+
+    .cell.miss {
+      background-color: #2c3e50 !important; /* Xám đậm hơn */
+      color: #7f8c8d;
+    }
+    .cell.miss::after {
+      content: '•';
+      font-size: 1.2rem;
+      color: #95a5a6;
+    }
+
+    .cell.hit {
+      background: linear-gradient(45deg, #ff4500, #ff8c00, #ffd700) !important;
+      animation: burning 0.5s infinite alternate;
+    }
+
+    @keyframes burning {
+      0% { box-shadow: inset 0 0 5px #ff4500; }
+      100% { box-shadow: inset 0 0 15px #ffd700; }
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.hidden { display: none; }
+
+    .modal-content {
+      background: var(--secondary-color);
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal-content h2 { margin-bottom: 10px; font-size: 1.5rem; }
+    .modal-content p { margin-bottom: 20px; color: #ecf0f1; }
+    .modal-content button { margin: 5px; }
+
+    /* SVG Submarine template storage (hidden) */
+    .svg-template { display: none; }
   </style>
 </head>
 <body>
-  <nav class="topbar">
-    <a class="back" href="../">← Back to Games</a>
-    <span>Ocean Warfare P2P</span>
-  </nav>
-
-  <header class="header">
-    <h1>Battleship<span style="color:var(--accent)">.</span></h1>
-    <div class="status-bar">
-      <span class="dot" id="statusDot"></span>
-      <span id="statusText">Đang kết nối mạng P2P...</span>
-    </div>
+  <!-- Header -->
+  <header>
+    <a href="#" class="back-btn">← Trở về</a>
+    <h1>⚓ Ocean Warfare P2P</h1>
+    <p class="subtitle">Trận chiến tàu ngầm trực tuyến</p>
   </header>
 
-  <!-- Lobby -->
-  <section class="card" id="lobby">
-    <div>
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>1. Phòng của bạn</h2>
-        <button id="refreshPeerBtn" style="padding: 5px 10px; font-size: 0.78rem;">🔄 Làm mới phòng</button>
+  <!-- Trạng thái kết nối P2P / Simulation -->
+  <div id="connection-status" class="status-box">
+    <div class="spinner"></div>
+    <span id="status-text">Đang khởi tạo hệ thống sảnh...</span>
+  </div>
+
+  <!-- Màn hình Sảnh -->
+  <div id="lobby-screen" class="screen">
+    <div class="lobby-container">
+      <div class="lobby-header">
+        <h2>🎮 Sảnh chờ</h2>
+        <button id="refresh-lobby" class="btn-refresh">🔄 Làm mới</button>
       </div>
-      <p style="margin-top:4px">Gửi mã hoặc link này cho bạn bè để cùng vào phòng:</p>
-      <div class="room-display" style="margin-top:10px">
-        <span class="room-code" id="myCode">------</span>
-        <button id="copyInviteBtn" disabled>Copy Link</button>
+      
+      <div class="lobby-info">
+        <p>👤 Tên của bạn: <strong id="player-name">Thuyền trưởng #<span id="rand-id"></span></strong></p>
       </div>
-    </div>
 
-    <div class="divider">HOẶC</div>
-
-    <div>
-      <h2>2. Vào phòng bạn bè</h2>
-      <p style="margin-top:4px">Nhập mã phòng 6 ký tự của đối thủ:</p>
-      <div class="row" style="margin-top:10px">
-        <input type="text" id="joinInput" maxlength="6" placeholder="MÃ PHÒNG" />
-        <button class="primary" id="joinBtn" disabled>Kết nối</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Game Arena -->
-  <section class="arena" id="arena">
-    <div class="battle-hud">
-      <div id="battleInfo" style="font-weight: 600; font-size: 0.9rem;">Trạng thái trận đấu</div>
-      <div class="timer-badge hidden" id="timerBadge">
-        ⏱ <span id="timeLeft">30</span>s
-      </div>
-    </div>
-
-    <div class="controls" id="setupControls">
-      <button id="rotateBtn">Xoay tàu: ➡️ Ngang (Phím R)</button>
-      <button id="randomBtn">Xếp ngẫu nhiên</button>
-      <button id="clearBtn">Xóa bàn cờ</button>
-      <button class="primary" id="readyBtn" disabled>Sẵn sàng chiến đấu</button>
-    </div>
-
-    <div class="controls hidden" id="endControls">
-      <button class="primary" id="rematchBtn">Chơi ván mới</button>
-    </div>
-
-    <div class="boards">
-      <div class="board-wrap">
-        <div class="board-title">
-          <span>Hạm đội của bạn</span>
-          <span class="sub" id="myBoardSub">Đặt tàu chiến</span>
+      <div class="players-list">
+        <h3>Người chơi đang chờ (<span id="player-count">1</span>)</h3>
+        <div id="players-container">
+          <div class="player-item">
+            <span>🤖 Đô đốc Bot (Sẵn sàng chiến đấu)</span>
+            <button onclick="startGameWithBot()">Thách đấu</button>
+          </div>
         </div>
-        <div class="grid" id="myGrid"></div>
-        <div class="ship-list" id="myShipList"></div>
       </div>
 
-      <div class="board-wrap" id="enemyWrap" style="opacity:.55">
-        <div class="board-title">
-          <span>Vùng biển địch</span>
-          <span class="sub" id="enemyBoardSub">Đang chờ...</span>
-        </div>
-        <div class="grid" id="enemyGrid"></div>
-        <div class="ship-list" id="enemyShipList"></div>
+      <div class="lobby-footer">
+        <p class="auto-refresh">⏱ Tự động làm mới sảnh sau <span id="refresh-timer">10</span>s</p>
       </div>
     </div>
-  </section>
+  </div>
+
+  <!-- Màn hình xếp tàu -->
+  <div id="setup-screen" class="screen hidden">
+    <div class="game-info" style="margin-bottom: 15px; text-align: center;">
+      <p>🎯 Đối thủ: <strong id="opponent-name">Đô đốc Bot</strong></p>
+      <p class="status-text" id="setup-status">Sắp xếp hạm đội của bạn (Nhấn R để xoay)</p>
+    </div>
+
+    <div class="setup-controls">
+      <button id="rotate-btn" class="btn">🔄 Xoay tàu: NGANG</button>
+      <button id="random-btn" class="btn">🎲 Xếp ngẫu nhiên</button>
+      <button id="clear-btn" class="btn btn-danger">🗑 Xóa bàn cờ</button>
+      <button id="ready-btn" class="btn btn-success" disabled>✅ Sẵn sàng chiến đấu</button>
+    </div>
+
+    <div class="board-container">
+      <div id="player-board" class="board"></div>
+    </div>
+  </div>
+
+  <!-- Màn hình chiến đấu -->
+  <div id="battle-screen" class="screen hidden">
+    <div class="battle-header" style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 15px; align-items: center;">
+      <div class="timer-box">
+        <span class="timer-label">Lượt:</span>
+        <span id="turn-indicator-text" style="font-weight: bold; color: #f39c12;">Đến lượt bạn!</span>
+      </div>
+      <button id="new-game-btn" class="btn btn-secondary hidden">🔄 Chơi ván mới</button>
+    </div>
+
+    <div class="boards-wrapper">
+      <div class="board-section">
+        <h3>⚓ Hạm đội của bạn</h3>
+        <div id="player-battle-board" class="board" style="margin-top: 10px;"></div>
+      </div>
+
+      <div class="board-section">
+        <h3>🎯 Vùng biển địch</h3>
+        <div id="enemy-board" class="board" style="margin-top: 10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal kết quả -->
+  <div id="result-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="result-title">🎉 Chiến thắng!</h2>
+      <p id="result-message">Bạn đã tiêu diệt toàn bộ hạm đội địch!</p>
+      <button id="modal-new-game" class="btn btn-success" onclick="resetToLobby()">Về sảnh chờ</button>
+    </div>
+  </div>
 
   <script>
-    const FLEET_CONFIG = [
-      { id: "carrier", name: "Carrier", size: 5 },
-      { id: "battleship", name: "Battleship", size: 4 },
-      { id: "cruiser", name: "Cruiser", size: 3 },
-      { id: "submarine", name: "Submarine", size: 3, isSub: true },
-      { id: "destroyer", name: "Destroyer", size: 2 }
+    // --- BIẾN TOÀN CỤC & CẤU HÌNH TRÒ CHƠI ---
+    const BOARD_SIZE = 10;
+    let playerName = "Thuyền trưởng " + Math.floor(Math.random() * 9000 + 1000);
+    document.getElementById('rand-id').innerText = playerName.split(' ')[1];
+
+    let shipsConfig = [
+      { name: "Hàng không mẫu hạm", size: 5 },
+      { name: "Tuần dương hạm", size: 4 },
+      { name: "Khu trục hạm", size: 3 },
+      { name: "Tàu tuần tra", size: 3 },
+      { name: "Tàu ngầm", size: 2 }
     ];
-    const PREFIX = "h4ry46-bs-stable-v2-";
 
-    let peer = null;
-    let conn = null;
-    let myRoomCode = "";
-    let isHost = false;
+    let playerBoard = Array(BOARD_SIZE).fill(0).map(() => Array(BOARD_SIZE).fill(null));
+    let enemyBoard = Array(BOARD_SIZE).fill(0).map(() => Array(BOARD_SIZE).fill(null));
+    let enemyShips = []; // Lưu vị trí các tàu của bot để check bắn trúng/cháy toàn bộ
 
-    let phase = "lobby"; 
-    const DIRECTIONS = ["H", "V", "HR", "VR"];
-    let dirIdx = 0;
+    let currentShipIndex = 0;
+    let isVertical = false;
+    let gameState = 'lobby'; // lobby, setup, battle, over
+    let isMyTurn = true;
+    let refreshCountdown = 10;
 
-    let selectedShipIdx = 0;
-    let myShips = []; 
-    let enemySunkIds = new Set();
-    let myShots = new Map(); 
-    let enemyShots = new Map(); 
-    let myReady = false;
-    let enemyReady = false;
-    let myTurn = false;
+    // --- KHỞI TẠO GIAO DIỆN SẢNH ---
+    document.getElementById('connection-status').innerHTML = '<span style="color: #2ecc71;">● Sẵn sàng kết nối sảnh P2P</span>';
+    
+    // Tự động đếm ngược làm mới sảnh mỗi 10s
+    setInterval(() => {
+      refreshCountdown--;
+      if (refreshCountdown <= 0) {
+        refreshCountdown = 10;
+        triggerRefreshLobby();
+      }
+      document.getElementById('refresh-timer').innerText = refreshCountdown;
+    }, 1000);
 
-    let turnTimer = null;
-    let timeLeft = 30;
-    let lastHoverR = null;
-    let lastHoverC = null;
+    document.getElementById('refresh-lobby').addEventListener('click', () => {
+      refreshCountdown = 10;
+      triggerRefreshLobby();
+    });
 
-    const statusDot = document.getElementById("statusDot");
-    const statusText = document.getElementById("statusText");
-    const myCodeEl = document.getElementById("myCode");
-    const copyInviteBtn = document.getElementById("copyInviteBtn");
-    const joinInput = document.getElementById("joinInput");
-    const joinBtn = document.getElementById("joinBtn");
-    const lobbyEl = document.getElementById("lobby");
-    const arenaEl = document.getElementById("arena");
-    const myGridEl = document.getElementById("myGrid");
-    const enemyGridEl = document.getElementById("enemyGrid");
-
-    function setStatus(text, state = "") {
-      statusText.textContent = text;
-      statusDot.className = "dot" + (state ? ` ${state}` : "");
+    function triggerRefreshLobby() {
+      const container = document.getElementById('players-container');
+      container.innerHTML = '<div style="font-size: 0.9rem; color: #95a5a6; text-align: center; padding: 10px;">Đang quét tìm người chơi...</div>';
+      setTimeout(() => {
+        container.innerHTML = `
+          <div class="player-item">
+            <span>🤖 Đô đốc Bot (Sẵn sàng chiến đấu)</span>
+            <button onclick="startGameWithBot()">Thách đấu</button>
+          </div>
+        `;
+      }, 500);
     }
 
-    function genCode() {
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      let code = "";
-      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
-      return code;
+    // --- CHUYỂN SANG MÀN HÌNH XẾP TÀU ---
+    function startGameWithBot() {
+      document.getElementById('lobby-screen').classList.add('hidden');
+      document.getElementById('setup-screen').classList.remove('hidden');
+      initPlayerSetupBoard();
+      autoDeployRandomShips(); // Tự động rải sẵn để người chơi dễ thao tác hoặc tùy chỉnh lại
     }
 
-    function initPeer() {
-      if (peer) peer.destroy();
-      myCodeEl.textContent = "------";
-      copyInviteBtn.disabled = true;
-      joinBtn.disabled = true;
-      setStatus("Đang tạo phòng mới...");
-
-      myRoomCode = genCode();
-      peer = new Peer(PREFIX + myRoomCode);
-
-      peer.on("open", () => {
-        myCodeEl.textContent = myRoomCode;
-        copyInviteBtn.disabled = false;
-        joinBtn.disabled = false;
-        setStatus("Phòng đã sẵn sàng! Đang chờ đối thủ kết nối...", "online");
-
-        const params = new URLSearchParams(window.location.search);
-        const target = (params.get("room") || "").trim().toUpperCase();
-        if (target && target.length === 6 && target !== myRoomCode) {
-          joinInput.value = target;
-          connectToRoom(target);
+    // --- XÂY DỰNG BÀN CỜ XẾP TÀU ---
+    const playerBoardEl = document.getElementById('player-board');
+    
+    function initPlayerSetupBoard() {
+      playerBoardEl.innerHTML = '';
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.dataset.row = r;
+          cell.dataset.col = c;
+          cell.addEventListener('click', () => handleSetupCellClick(r, c));
+          playerBoardEl.appendChild(cell);
         }
-      });
-
-      peer.on("connection", (incoming) => {
-        if (conn) {
-          incoming.close();
-          return;
-        }
-        isHost = true;
-        setupConnection(incoming);
-      });
-
-      peer.on("error", (err) => {
-        setStatus(`Lỗi kết nối (${err.type}). Bấm Làm mới phòng để thử lại.`);
-        joinBtn.disabled = false;
-      });
+      }
+      renderPlayerSetupBoard();
     }
 
-    function connectToRoom(code) {
-      if (!code || code.length !== 6) return alert("Mã phòng phải gồm 6 ký tự!");
-      isHost = false;
-      joinBtn.disabled = true;
-      setStatus(`Đang kết nối tới phòng ${code}...`);
-      const outgoing = peer.connect(PREFIX + code, { reliable: true });
-      setupConnection(outgoing);
-    }
-
-    function setupConnection(connection) {
-      conn = connection;
-
-      conn.on("open", () => {
-        lobbyEl.classList.add("hidden");
-        arenaEl.classList.add("active");
-        startSetupPhase();
-      });
-
-      conn.on("data", handleMessage);
-
-      conn.on("close", () => {
-        stopTurnTimer();
-        phase = "over";
-        setStatus("Đối thủ đã thoát phòng.");
-        document.getElementById("setupControls").classList.add("hidden");
-        document.getElementById("endControls").classList.remove("hidden");
-      });
-    }
-
-    function send(payload) {
-      if (conn && conn.open) conn.send(payload);
-    }
-
-    function buildGrids() {
-      myGridEl.innerHTML = "";
-      enemyGridEl.innerHTML = "";
-
-      for (let r = 0; r < 10; r++) {
-        for (let c = 0; c < 10; c++) {
-          const myCell = document.createElement("div");
-          myCell.className = "cell";
-          myCell.dataset.r = r; myCell.dataset.c = c;
-          myCell.addEventListener("mouseenter", () => {
-            lastHoverR = r; lastHoverC = c;
-            previewShip(r, c);
-          });
-          myCell.addEventListener("mouseleave", clearPreview);
-          myCell.addEventListener("click", () => placeShipAt(r, c));
-          myGridEl.appendChild(myCell);
-
-          const enCell = document.createElement("div");
-          enCell.className = "cell";
-          enCell.dataset.r = r; enCell.dataset.c = c;
-          enCell.addEventListener("click", () => fireAt(r, c));
-          enemyGridEl.appendChild(enCell);
+    function renderPlayerSetupBoard() {
+      const cells = playerBoardEl.children;
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          const idx = r * BOARD_SIZE + c;
+          cells[idx].className = 'cell' + (playerBoard[r][c] ? ' ship' : '');
         }
       }
     }
 
-    function startSetupPhase() {
-      phase = "setup";
-      myShips = [];
-      enemySunkIds.clear();
-      myShots.clear();
-      enemyShots.clear();
-      myReady = false;
-      enemyReady = false;
-      selectedShipIdx = 0;
+    document.getElementById('rotate-btn').addEventListener('click', () => {
+      isVertical = !isVertical;
+      document.getElementById('rotate-btn').innerText = `🔄 Xoay tàu: ${isVertical ? 'DỌC' : 'NGANG'}`;
+    });
 
-      document.getElementById("setupControls").classList.remove("hidden");
-      document.getElementById("endControls").classList.add("hidden");
-      document.getElementById("readyBtn").disabled = true;
-      document.getElementById("readyBtn").textContent = "Sẵn sàng chiến đấu";
-      document.getElementById("enemyWrap").style.opacity = ".55";
-      document.getElementById("myBoardSub").textContent = "Đặt tàu chiến";
-      document.getElementById("enemyBoardSub").textContent = "Đang chờ...";
+    document.getElementById('random-btn').addEventListener('click', autoDeployRandomShips);
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      playerBoard = Array(BOARD_SIZE).fill(0).map(() => Array(BOARD_SIZE).fill(null));
+      currentShipIndex = 0;
+      document.getElementById('ready-btn').disabled = true;
+      renderPlayerSetupBoard();
+    });
 
-      buildGrids();
-      renderBoards();
-      setStatus("Đã kết nối! Hãy sắp xếp 5 tàu chiến của bạn.", "online");
-    }
-
-    function getPlacementCells(r, c, size, dir) {
-      const cells = [];
-      for (let i = 0; i < size; i++) {
-        let nr = r, nc = c;
-        if (dir === "H") nc = c + i;
-        else if (dir === "V") nr = r + i;
-        else if (dir === "HR") nc = c - i;
-        else if (dir === "VR") nr = r - i;
-
-        if (nr < 0 || nr > 9 || nc < 0 || nc > 9) return null;
-        cells.push({ r: nr, c: nc });
-      }
-      const occupied = new Set(myShips.flatMap(s => s.cells.map(p => `${p.r},${p.c}`)));
-      if (cells.some(p => occupied.has(`${p.r},${p.c}`))) return null;
-      return cells;
-    }
-
-    function clearPreview() {
-      myGridEl.querySelectorAll(".cell").forEach(el => {
-        el.classList.remove("preview", "preview-invalid");
-      });
-    }
-
-    function previewShip(r, c) {
-      if (phase !== "setup" || myReady || selectedShipIdx >= FLEET_CONFIG.length) return;
-      clearPreview();
-      const ship = FLEET_CONFIG[selectedShipIdx];
-      const dir = DIRECTIONS[dirIdx];
-      const validCells = getPlacementCells(r, c, ship.size, dir);
-
-      if (validCells) {
-        validCells.forEach(p => {
-          const el = myGridEl.children[p.r * 10 + p.c];
-          if (el) el.classList.add("preview");
-        });
-      } else {
-        for (let i = 0; i < ship.size; i++) {
-          let nr = r, nc = c;
-          if (dir === "H") nc = c + i;
-          else if (dir === "V") nr = r + i;
-          else if (dir === "HR") nc = c - i;
-          else if (dir === "VR") nr = r - i;
-
-          if (nr >= 0 && nr <= 9 && nc >= 0 && nc <= 9) {
-            myGridEl.children[nr * 10 + nc].classList.add("preview-invalid");
-          }
-        }
-      }
-    }
-
-    function placeShipAt(r, c) {
-      if (phase !== "setup" || myReady || selectedShipIdx >= FLEET_CONFIG.length) return;
-      const ship = FLEET_CONFIG[selectedShipIdx];
-      const dir = DIRECTIONS[dirIdx];
-      const cells = getPlacementCells(r, c, ship.size, dir);
-      if (!cells) return;
-
-      myShips.push({ ...ship, cells, hits: new Set() });
-      selectedShipIdx++;
-      clearPreview();
-      renderBoards();
-
-      if (selectedShipIdx === FLEET_CONFIG.length) {
-        document.getElementById("readyBtn").disabled = false;
-      }
-    }
-
-    function randomizeFleet() {
-      if (phase !== "setup" || myReady) return;
-      myShips = [];
-      for (const ship of FLEET_CONFIG) {
+    function autoDeployRandomShips() {
+      playerBoard = Array(BOARD_SIZE).fill(0).map(() => Array(BOARD_SIZE).fill(null));
+      
+      shipsConfig.forEach(ship => {
         let placed = false;
         while (!placed) {
-          const dir = DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
-          const r = Math.floor(Math.random() * 10);
-          const c = Math.floor(Math.random() * 10);
-          const cells = getPlacementCells(r, c, ship.size, dir);
-          if (cells) {
-            myShips.push({ ...ship, cells, hits: new Set() });
+          let ver = Math.random() < 0.5;
+          let r = Math.floor(Math.random() * BOARD_SIZE);
+          let c = Math.floor(Math.random() * BOARD_SIZE);
+          if (canPlaceShip(playerBoard, r, c, ship.size, ver)) {
+            placeShipOnBoard(playerBoard, r, c, ship.size, ver, ship);
             placed = true;
           }
         }
-      }
-      selectedShipIdx = FLEET_CONFIG.length;
-      document.getElementById("readyBtn").disabled = false;
-      renderBoards();
-    }
-
-    function checkBattleStart() {
-      if (myReady && enemyReady) {
-        phase = "battle";
-        document.getElementById("setupControls").classList.add("hidden");
-        document.getElementById("enemyWrap").style.opacity = "1";
-        document.getElementById("timerBadge").classList.remove("hidden");
-        myTurn = isHost;
-        startTurn();
-      }
-    }
-
-    function startTurn() {
-      if (phase !== "battle") return;
-      stopTurnTimer();
-      timeLeft = 30;
-      updateTurnUI();
-
-      turnTimer = setInterval(() => {
-        timeLeft--;
-        document.getElementById("timeLeft").textContent = timeLeft;
-        if (timeLeft <= 10) {
-          document.getElementById("timerBadge").classList.add("warning");
-        }
-        if (timeLeft <= 0) {
-          stopTurnTimer();
-          if (myTurn) {
-            myTurn = false;
-            send({ type: "TIMEOUT_SWITCH" });
-            startTurn();
-          }
-        }
-      }, 1000);
-    }
-
-    function stopTurnTimer() {
-      if (turnTimer) clearInterval(turnTimer);
-      document.getElementById("timerBadge").classList.remove("warning");
-    }
-
-    function updateTurnUI() {
-      if (phase !== "battle") return;
-      document.getElementById("timeLeft").textContent = timeLeft;
-      if (myTurn) {
-        setStatus("ĐẾN LƯỢT BẠN — Bấm vào vùng biển địch để tấn công!", "turn");
-        document.getElementById("battleInfo").textContent = "Lượt của bạn (Còn 30s)";
-        document.getElementById("enemyBoardSub").textContent = "Đang nhắm bắn";
-        document.getElementById("myBoardSub").textContent = "Phòng thủ";
-      } else {
-        setStatus("LƯỢT ĐỐI THỦ — Đang chờ đối phương ra đòn...", "online");
-        document.getElementById("battleInfo").textContent = "Đang đợi đối thủ...";
-        document.getElementById("enemyBoardSub").textContent = "Đối thủ đang đánh";
-        document.getElementById("myBoardSub").textContent = "Bảo vệ hạm đội";
-      }
-      renderBoards();
-    }
-
-    function fireAt(r, c) {
-      if (phase !== "battle" || !myTurn) return;
-      const key = `${r},${c}`;
-      if (myShots.has(key)) return;
-
-      stopTurnTimer();
-      send({ type: "FIRE", r, c });
-    }
-
-    function handleMessage(msg) {
-      if (msg.type === "READY") {
-        enemyReady = true;
-        if (!myReady) setStatus("Đối thủ đã sẵn sàng! Hoàn tất xếp tàu của bạn.", "online");
-        checkBattleStart();
-      } else if (msg.type === "TIMEOUT_SWITCH") {
-        stopTurnTimer();
-        myTurn = true;
-        startTurn();
-      } else if (msg.type === "FIRE") {
-        const key = `${msg.r},${msg.c}`;
-        let hitShip = null;
-        for (const ship of myShips) {
-          if (ship.cells.some(p => p.r === msg.r && p.c === msg.c)) {
-            ship.hits.add(key);
-            hitShip = ship;
-            break;
-          }
-        }
-
-        if (!hitShip) {
-          enemyShots.set(key, "miss");
-          send({ type: "RESULT", r: msg.r, c: msg.c, outcome: "miss", switchTurn: true });
-          stopTurnTimer();
-          myTurn = true;
-          startTurn();
-        } else {
-          const isSunk = hitShip.hits.size === hitShip.size;
-          if (isSunk) {
-            hitShip.cells.forEach(p => enemyShots.set(`${p.r},${p.c}`, "sunk"));
-          } else {
-            enemyShots.set(key, "hit");
-          }
-
-          const allSunk = myShips.every(s => s.hits.size === s.size);
-          send({
-            type: "RESULT",
-            r: msg.r,
-            c: msg.c,
-            outcome: isSunk ? "sunk" : "hit",
-            sunkShip: isSunk ? { id: hitShip.id, name: hitShip.name, cells: hitShip.cells } : null,
-            gameOver: allSunk,
-            switchTurn: false
-          });
-
-          renderBoards();
-          if (allSunk) {
-            endGame(false);
-          } else {
-            stopTurnTimer();
-            myTurn = false;
-            startTurn();
-          }
-        }
-      } else if (msg.type === "RESULT") {
-        const key = `${msg.r},${msg.c}`;
-        if (msg.outcome === "miss") {
-          myShots.set(key, "miss");
-        } else if (msg.outcome === "hit") {
-          myShots.set(key, "hit");
-        } else if (msg.outcome === "sunk" && msg.sunkShip) {
-          enemySunkIds.add(msg.sunkShip.id);
-          msg.sunkShip.cells.forEach(p => myShots.set(`${p.r},${p.c}`, "sunk"));
-        }
-
-        renderBoards();
-        if (msg.gameOver) {
-          endGame(true);
-        } else {
-          stopTurnTimer();
-          myTurn = !msg.switchTurn;
-          startTurn();
-        }
-      } else if (msg.type === "REMATCH") {
-        startSetupPhase();
-      }
-    }
-
-    function endGame(won) {
-      stopTurnTimer();
-      phase = "over";
-      myTurn = false;
-      renderBoards();
-      setStatus(won ? "CHIẾN THẮNG! Bạn đã đánh chìm toàn bộ hạm đội địch!" : "THẤT BẠI! Hạm đội của bạn đã bị tiêu diệt.", won ? "turn" : "");
-      document.getElementById("battleInfo").textContent = won ? "🎉 Bạn đã thắng!" : "💀 Bạn đã thua!";
-      document.getElementById("enemyBoardSub").textContent = won ? "Đã phá hủy" : "Bị tiêu diệt";
-      document.getElementById("endControls").classList.remove("hidden");
-    }
-
-    function renderBoards() {
-      const myShipMap = new Map();
-      myShips.forEach(s => {
-        const isSunk = s.hits.size === s.size;
-        // Ô đầu tiên trong mảng cells chính là đầu tàu (Bow)
-        s.cells.forEach((p, idx) => {
-          myShipMap.set(`${p.r},${p.c}`, { isSub: s.isSub, isBow: idx === 0, isSunk });
-        });
       });
-
-      for (let r = 0; r < 10; r++) {
-        for (let c = 0; c < 10; c++) {
-          const idx = r * 10 + c;
-          const key = `${r},${c}`;
-          const cell = myGridEl.children[idx];
-          cell.className = "cell";
-          if (phase === "setup" && !myReady) cell.classList.add("clickable");
-
-          const shotState = enemyShots.get(key);
-          if (shotState) {
-            cell.classList.add(shotState);
-          } else if (myShipMap.has(key)) {
-            cell.classList.add("ship");
-            const info = myShipMap.get(key);
-            if (info.isBow) cell.classList.add("bow");
-            if (info.isSub) cell.classList.add("sub-icon");
-            if (info.isSunk) cell.classList.add("sunk");
-          }
-        }
-      }
-
-      for (let r = 0; r < 10; r++) {
-        for (let c = 0; c < 10; c++) {
-          const idx = r * 10 + c;
-          const key = `${r},${c}`;
-          const cell = enemyGridEl.children[idx];
-          cell.className = "cell";
-
-          const shotState = myShots.get(key);
-          if (shotState) {
-            cell.classList.add(shotState);
-          } else if (phase === "battle" && myTurn) {
-            cell.classList.add("clickable");
-          }
-        }
-      }
-
-      document.getElementById("myShipList").innerHTML = FLEET_CONFIG.map((s, idx) => {
-        const placedObj = myShips.find(m => m.id === s.id);
-        let cls = "ship-tag";
-        if (phase === "setup") {
-          if (placedObj) cls += " placed";
-          else if (idx === selectedShipIdx) cls += " active";
-        } else if (placedObj && placedObj.hits.size === placedObj.size) {
-          cls += " destroyed";
-        }
-        return `<span class="${cls}">${s.name} (${s.size})</span>`;
-      }).join("");
-
-      document.getElementById("enemyShipList").innerHTML = FLEET_CONFIG.map(s => {
-        const cls = "ship-tag" + (enemySunkIds.has(s.id) ? " destroyed" : "");
-        return `<span class="${cls}">${s.name} (${s.size})</span>`;
-      }).join("");
+      renderPlayerSetupBoard();
+      document.getElementById('ready-btn').disabled = false;
     }
 
-    document.getElementById("refreshPeerBtn").addEventListener("click", () => {
-      initPeer();
+    function canPlaceShip(board, row, col, size, vertical) {
+      if (vertical && row + size > BOARD_SIZE) return false;
+      if (!vertical && col + size > BOARD_SIZE) return false;
+      for (let i = 0; i < size; i++) {
+        let r = vertical ? row + i : row;
+        let c = vertical ? col : col + i;
+        if (board[r][c] !== null) return false;
+      }
+      return true;
+    }
+
+    function placeShipOnBoard(board, row, col, size, vertical, shipObj) {
+      let shipCells = [];
+      for (let i = 0; i < size; i++) {
+        let r = vertical ? row + i : row;
+        let c = vertical ? col : col + i;
+        shipCells.push({ row: r, col: c });
+      }
+      shipCells.forEach(cell => {
+        board[cell.row][cell.col] = { ship: shipObj, cells: shipCells, hits: 0 };
+      });
+    }
+
+    document.getElementById('ready-btn').addEventListener('click', () => {
+      document.getElementById('setup-screen').classList.add('hidden');
+      document.getElementById('battle-screen').classList.remove('hidden');
+      initBattleBoards();
+      setupEnemyFleet();
+      gameState = 'battle';
     });
 
-    copyInviteBtn.addEventListener("click", async () => {
-      const url = `${window.location.origin}${window.location.pathname}?room=${myRoomCode}`;
-      await navigator.clipboard.writeText(url);
-      copyInviteBtn.textContent = "Đã Copy!";
-      setTimeout(() => (copyInviteBtn.textContent = "Copy Link"), 1800);
-    });
+    // --- GIAO DIỆN CHIẾN ĐẤU & CƠ CHẾ BẮN ---
+    const playerBattleBoardEl = document.getElementById('player-battle-board');
+    const enemyBoardEl = document.getElementById('enemy-board');
 
-    joinBtn.addEventListener("click", () => {
-      connectToRoom(joinInput.value.trim().toUpperCase());
-    });
-    joinInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") connectToRoom(joinInput.value.trim().toUpperCase());
-    });
+    function initBattleBoards() {
+      playerBattleBoardEl.innerHTML = '';
+      enemyBoardEl.innerHTML = '';
 
-    const dirLabels = { "H": "➡️ Ngang (Phải)", "V": "⬇️ Dọc (Xuống)", "HR": "⬅️ Ngang (Trái)", "VR": "⬆️ Dọc (Lên)" };
-    function rotateShip() {
-      dirIdx = (dirIdx + 1) % DIRECTIONS.length;
-      const currentDir = DIRECTIONS[dirIdx];
-      document.getElementById("rotateBtn").textContent = `Xoay tàu: ${dirLabels[currentDir]} (Phím R)`;
-      
-      if (phase === "setup" && !myReady && lastHoverR !== null && lastHoverC !== null) {
-        previewShip(lastHoverR, lastHoverC);
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell' + (playerBoard[r][c] ? ' ship' : '');
+          playerBattleBoardEl.appendChild(cell);
+        }
+      }
+
+      for (let r = 0; r < BOARD_SIZE; r++) {
+        for (let c = 0; c < BOARD_SIZE; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.addEventListener('click', () => handlePlayerShoot(r, c, cell));
+          enemyBoardEl.appendChild(cell);
+        }
       }
     }
 
-    document.getElementById("rotateBtn").addEventListener("click", rotateShip);
-    document.addEventListener("keydown", (e) => {
-      if ((e.key === "r" || e.key === "R") && phase === "setup" && !myReady) {
-        rotateShip();
+    // Bot tự rải tàu ẩn
+    function setupEnemyFleet() {
+      enemyShips = [];
+      let tempBoard = Array(BOARD_SIZE).fill(0).map(() => Array(BOARD_SIZE).fill(null));
+      shipsConfig.forEach(ship => {
+        let placed = false;
+        while (!placed) {
+          let ver = Math.random() < 0.5;
+          let r = Math.floor(Math.random() * BOARD_SIZE);
+          let c = Math.floor(Math.random() * BOARD_SIZE);
+          if (canPlaceShip(tempBoard, r, c, ship.size, ver)) {
+            let shipCells = [];
+            for (let i = 0; i < ship.size; i++) {
+              let sr = ver ? r + i : r;
+              let sc = ver ? c : c + i;
+              shipCells.push({ row: sr, col: sc });
+            }
+            let shipData = { name: ship.name, cells: shipCells, sunk: false };
+            enemyShips.push(shipData);
+            shipCells.forEach(cell => {
+              tempBoard[cell.row][cell.col] = shipData;
+            });
+            placed = true;
+          }
+        }
+      });
+      // Lưu ma trận ẩn của đối thủ
+      enemyBoard = tempBoard;
+    }
+
+    function handlePlayerShoot(row, col, cellEl) {
+      if (!isMyTurn || gameState !== 'battle') return;
+      if (cellEl.classList.contains('hit') || cellEl.classList.contains('miss')) return;
+
+      const target = enemyBoard[row][col];
+      if (target) {
+        // Bắn trúng -> Hiệu ứng cháy toàn bộ con tàu đó (Bắn đầu tàu cháy cả tàu)
+        target.cells.forEach(c => {
+          let idx = c.row * BOARD_SIZE + c.col;
+          let targetCellEl = enemyBoardEl.children[idx];
+          targetCellEl.className = 'cell hit';
+        });
+
+        // Kiểm tra xem tàu đã chìm hoàn toàn chưa
+        target.sunk = true;
+        
+        // Kiểm tra chiến thắng
+        if (enemyShips.every(s => s.sunk)) {
+          endGame(true);
+          return;
+        }
+
+        document.getElementById('turn-indicator-text').innerText = "Trúng đích! Bạn được bắn tiếp.";
+      } else {
+        // Bắn hụt -> Màu đậm hơn
+        cellEl.className = 'cell miss';
+        isMyTurn = false;
+        document.getElementById('turn-indicator-text').innerText = "Hụt! Lượt của đối thủ...";
+        setTimeout(botTurn, 1200);
       }
-    });
+    }
 
-    document.getElementById("randomBtn").addEventListener("click", randomizeFleet);
-    document.getElementById("clearBtn").addEventListener("click", () => {
-      if (phase !== "setup" || myReady) return;
-      myShips = [];
-      selectedShipIdx = 0;
-      document.getElementById("readyBtn").disabled = true;
-      renderBoards();
-    });
+    function botTurn() {
+      if (gameState !== 'battle') return;
 
-    document.getElementById("readyBtn").addEventListener("click", () => {
-      if (myShips.length !== FLEET_CONFIG.length) return;
-      myReady = true;
-      document.getElementById("readyBtn").disabled = true;
-      document.getElementById("readyBtn").textContent = "Đang chờ đối thủ...";
-      document.getElementById("myBoardSub").textContent = "Đã khóa hạm đội";
-      send({ type: "READY" });
-      if (!enemyReady) setStatus("Đã sẵn sàng! Đang đợi đối thủ xếp xong tàu...", "online");
-      renderBoards();
-      checkBattleStart();
-    });
+      // Bot chọn ô ngẫu nhiên chưa bắn
+      let r, c, cellEl;
+      let attempts = 0;
+      do {
+        r = Math.floor(Math.random() * BOARD_SIZE);
+        c = Math.floor(Math.random() * BOARD_SIZE);
+        let idx = r * BOARD_SIZE + c;
+        cellEl = playerBattleBoardEl.children[idx];
+        attempts++;
+      } while ((cellEl.classList.contains('hit') || cellEl.classList.contains('miss')) && attempts < 100);
 
-    document.getElementById("rematchBtn").addEventListener("click", () => {
-      send({ type: "REMATCH" });
-      startSetupPhase();
-    });
+      const target = playerBoard[r][c];
+      if (target) {
+        // Bot bắn trúng tàu của người chơi -> Cháy toàn bộ tàu của người chơi
+        target.cells.forEach(cell => {
+          let idx = cell.row * BOARD_SIZE + cell.col;
+          playerBattleBoardEl.children[idx].className = 'cell hit';
+        });
 
-    initPeer();
+        // Kiểm tra người chơi thua chưa
+        let allPlayerCellsDestroyed = true;
+        for (let row = 0; row < BOARD_SIZE; row++) {
+          for (let col = 0; col < BOARD_SIZE; col++) {
+            if (playerBoard[row][col] !== null) {
+              let idx = row * BOARD_SIZE + col;
+              if (!playerBattleBoardEl.children[idx].classList.contains('hit')) {
+                allPlayerCellsDestroyed = false;
+              }
+            }
+          }
+        }
+
+        if (allPlayerCellsDestroyed) {
+          endGame(false);
+          return;
+        }
+
+        // Bot bắn trúng được bắn tiếp
+        setTimeout(botTurn, 1000);
+      } else {
+        cellEl.className = 'cell miss';
+        isMyTurn = true;
+        document.getElementById('turn-indicator-text').innerText = "Đến lượt bạn!";
+      }
+    }
+
+    function endGame(isWin) {
+      gameState = 'over';
+      document.getElementById('result-title').innerText = isWin ? "🎉 Chiến thắng tuyệt đối!" : "💥 Thất bại!";
+      document.getElementById('result-message').innerText = isWin ? "Bạn đã tiêu diệt toàn bộ hạm đội tàu ngầm địch!" : "Hạm đội của bạn đã bị đối thủ nhấn chìm!";
+      document.getElementById('result-modal').classList.remove('hidden');
+    }
+
+    function resetToLobby() {
+      document.getElementById('result-modal').classList.add('hidden');
+      document.getElementById('battle-screen').classList.add('hidden');
+      document.getElementById('lobby-screen').classList.remove('hidden');
+      gameState = 'lobby';
+      isMyTurn = true;
+    }
   </script>
 </body>
 </html>
